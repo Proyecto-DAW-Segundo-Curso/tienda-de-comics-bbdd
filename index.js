@@ -8,6 +8,7 @@ const Connection = mysql.createPool({
 })
 
 //Linea de prueba
+//Linea 2 de prueba
 const createTableUsuario = 'CREATE TABLE usuarios (id int(15) NOT NULL AUTO_INCREMENT,'+
 'nombre varchar (50) DEFAULT NULL,' +
 'email varchar (50) DEFAULT NULL,' +
