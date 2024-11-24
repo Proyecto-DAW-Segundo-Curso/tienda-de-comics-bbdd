@@ -1,80 +1,49 @@
-const express = require('express');
-const conexionBaseDatos = require('./conexionBaseDatos');
+const mysql = require('mysql');
 
-const app = express();
-app.use(express.json()); // Middleware para parsear los JSON recibidos
+// Crear conexión a la base de datos
+const conex = mysql.createPool({
+    host: 'localhost',
+    user: 'root',
+    password: '',
+    database: 'comics',
+    waitForConnections: true, //waitForConnections: true: Las solicitudes no fallan automáticamente; esperan por una conexión.
+    connectionLimit: 10, //connectionLimit: 10: Máximo de 10 conexiones activas al mismo tiempo.
+    queueLimit: 0 //queueLimit: 0: No hay límite para las solicitudes en cola, lo que evita rechazar conexiones si las conexiones actuales están ocupadas.
+});
 
-const PORT = 3000;
+const insertarUsuario = 'INSERT INTO usuarios (nombre, email, contrasenia, permiso) VALUES (?, ?, ?, ?)';
+const consultarUsuarios = 'SELECT * FROM usuarios';
+const actualizarUsuario = 'UPDATE usuarios SET email = ?, permiso = ? WHERE id = ?';
+const eliminarUsuario = 'DELETE FROM usuarios WHERE id = ?';
 
-// **1. Crear un usuario (INSERT)**
-app.post('/usuarios', (req, res) => {
-    const { nombre, email, contrasenia, permiso } = req.body; //Req.body es una solicitud HTTP, el cuerpo de la solicitud. Esta solicitud está vinculada al (express.json) de más arriba, para que le pase dicha información y la parsee
-
-    const query = 'INSERT INTO usuarios (nombre, email, contrasenia, permiso) VALUES (?, ?, ?, ?)';
-    conexionBaseDatos.query(query, [nombre, email, contrasenia, permiso], (error, result) => {
+// Función para ejecutar una consulta
+function ejecutarConsulta(query, params = [], mensaje) {
+    conex.getConnection((error, conexion) => {
         if (error) {
-            console.error('Error al crear usuario:', error);
-            return res.status(500).json({ error: 'Error al crear usuario' });
+            console.error('Error al obtener conexión:', error);
+            return;
         }
 
-        res.status(201).json({ message: 'Usuario creado', id: result.insertId });
+        conexion.query(query, params, (err, resultados) => {
+            if (err) {
+                console.error('Error en la consulta:', err);
+            } else {
+                console.log(mensaje, resultados);
+            }
+            conexion.release();
+        });
     });
-});
+}
 
-// **2. Leer usuarios (SELECT)**
-app.get('/usuarios', (req, res) => {
-    const query = 'SELECT * FROM usuarios';
 
-    conexionBaseDatos.query(query, (error, rows) => {
-        if (error) {
-            console.error('Error al obtener usuarios:', error);
-            return res.status(500).json({ error: 'Error al obtener usuarios' });
-        }
+// Insertar un usuario
+ejecutarConsulta(insertarUsuario, [], 'Usuario insertado con éxito.');
 
-        res.status(200).json(rows);
-    });
-});
+// Consultar usuarios
+ejecutarConsulta(consultarUsuarios, [], 'Usuarios encontrados:');
 
-// **3. Actualizar un usuario (UPDATE)**
-app.put('/usuarios/:id', (req, res) => {
-    const { id } = req.params;
-    const { nombre, email, contrasenia, permiso } = req.body; //Req.body es una solicitud HTTP, el cuerpo de la solicitud. Esta solicitud está vinculada al (express.json) de más arriba, para que le pase dicha información y la parsee
+// Actualizar un usuario
+ejecutarConsulta(actualizarUsuario, [], 'Usuario actualizado con éxito.');
 
-    const query = 'UPDATE usuarios SET nombre = ?, email = ?, contrasenia = ?, permiso = ? WHERE id = ?';
-    conexionBaseDatos.query(query, [nombre, email, contrasenia, permiso, id], (error, result) => {
-        if (error) {
-            console.error('Error al actualizar usuario:', error);
-            return res.status(500).json({ error: 'Error al actualizar usuario' });
-        }
-
-        if (result.affectedRows === 0) {
-            return res.status(404).json({ error: 'Usuario no encontrado' });
-        }
-
-        res.status(200).json({ message: 'Usuario actualizado' });
-    });
-});
-
-// **4. Eliminar un usuario (DELETE)**
-app.delete('/usuarios/:id', (req, res) => {
-    const { id } = req.params;
-
-    const query = 'DELETE FROM usuarios WHERE id = ?';
-    conexionBaseDatos.query(query, [id], (error, result) => {
-        if (error) {
-            console.error('Error al eliminar usuario:', error);
-            return res.status(500).json({ error: 'Error al eliminar usuario' });
-        }
-
-        if (result.affectedRows === 0) {
-            return res.status(404).json({ error: 'Usuario no encontrado' });
-        }
-
-        res.status(200).json({ message: 'Usuario eliminado' });
-    });
-});
-
-// Inicia el servidor
-app.listen(PORT, () => {
-    console.log(`Servidor escuchando en http://localhost:${PORT}`);
-});
+// Eliminar un usuario
+ejecutarConsulta(eliminarUsuario, [], 'Usuario eliminado con éxito.');
