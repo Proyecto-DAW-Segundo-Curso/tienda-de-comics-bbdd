@@ -17,7 +17,7 @@ const actualizarUsuario = 'UPDATE usuarios SET email = ?, permiso = ? WHERE id =
 const eliminarUsuario = 'DELETE FROM usuarios WHERE id = ?';
 
 // Función para ejecutar una consulta
-function ejecutarConsulta(query, params = [], mensaje) {
+function ejecutarConsulta(query, params = [], mensaje) { // Esta función busca "ejecutarConsulta" más abajo en la que le pasamos diferentes valores para saber qué consulta es (query) qué parámetros vamos a introducir (params = []) y un mensaje indicando lo que se ha realizado
     conex.getConnection((error, conexion) => {
         if (error) {
             console.error('Error al obtener conexión:', error);
@@ -37,7 +37,7 @@ function ejecutarConsulta(query, params = [], mensaje) {
 
 
 // Insertar un usuario
-ejecutarConsulta(insertarUsuario, [], 'Usuario insertado con éxito.');
+ejecutarConsulta(insertarUsuario, [], 'Usuario insertado con éxito.'); // Aquí están los valores qque se pasarán a la función ejecutarConsulta. La parte [] es el hueco donde iría la info que escribe el usuario, esto se escribiría en un input del front, pasaría aquí y llegaría a la función
 
 // Consultar usuarios
 ejecutarConsulta(consultarUsuarios, [], 'Usuarios encontrados:');
