@@ -86,9 +86,10 @@ const createTableComentarios = 'CREATE TABLE comentarios (id int(15) NOT NULL AU
   'CONSTRAINT fk_comentario_intercambio FOREIGN KEY (intercambio_id) REFERENCES intercambios(id))';
 
 
-Connection.getConnection(function(error,conexion){
-    conexion.query(createTableComentarios, function(e){
+Connection.getConnection(function(error, conexion){
+    conexion.query(createTableComics, function(e){
         if(e) throw e;
+        
         else{
             console.log("Tabla creada con exito");
         }
