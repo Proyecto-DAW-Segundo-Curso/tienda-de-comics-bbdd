@@ -1,4 +1,4 @@
-const mysql = require('mysql2/promise'); // Importa la librería mysql2/promise, sugerido por chatgpt
+const mysql = require('mysql2/promise'); // Importa la librería promise de mysql2, nos permite usar métodos como Await y Async en vez de las funciones callback tradicionales
 
 const pool = mysql.createPool({
   host: 'localhost',       // Cambia según tu configuración
