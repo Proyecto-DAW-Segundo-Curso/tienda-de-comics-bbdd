@@ -42,7 +42,7 @@ async function addComic(comic) {
   );
   // Devuelve el ID del nuevo registro insertado, generado automáticamente por la base de datos
   return result.insertId;
-}   
+}
 
 // Función asincrónica para actualizar un cómic existente en la base de datos por su ID
 async function updateComic(id, comic) {
