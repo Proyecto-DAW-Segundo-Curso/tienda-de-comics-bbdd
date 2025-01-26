@@ -41,5 +41,4 @@ async function getComicsByUserId(usuarioId) {
         }
     }
 
-
 module.exports = ComicModel;

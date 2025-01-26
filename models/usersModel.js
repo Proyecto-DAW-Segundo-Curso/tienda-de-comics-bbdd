@@ -17,8 +17,8 @@ async function getUserBydId (id){
 async function addUser (user){
     const {nombre,email,contrasenia,permiso}=user;
     const [result] = await pool.query(
-        'INSERT INTO usuarios (nombre, email, contrasenia, permiso) VALUES (?,?,?,?)',
-        [nombre, email, contrasenia, permiso]
+        'INSERT INTO usuarios (nombre, email, contrasenia, permiso, fecha_registro) VALUES (?,?,?,?,?)',
+        [nombre, email, contrasenia, permiso, fecha_registro]
     )
     return result.insertId;
 }
