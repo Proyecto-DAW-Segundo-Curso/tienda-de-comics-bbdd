@@ -10,7 +10,7 @@ const Connection = mysql.createPool({
 const createTableUsuario = 'CREATE TABLE usuarios (id int(15) NOT NULL AUTO_INCREMENT,'+
 'nombre varchar (50) DEFAULT NULL,' +
 'email varchar (50) DEFAULT NULL,' +
-'contrasenia int (20) DEFAULT NULL,' +
+'contrasenia varchar (300) DEFAULT NULL,' +
 'permiso int (3) DEFAULT NULL,'+
 'PRIMARY KEY (id))';
 
@@ -84,7 +84,7 @@ const createTableComentarios = 'CREATE TABLE comentarios (id int(15) NOT NULL AU
   'CONSTRAINT fk_comentario_intercambio FOREIGN KEY (intercambio_id) REFERENCES intercambios(id))';
 
 Connection.getConnection(function(error, conexion){
-    conexion.query(createTableComics, function(e){
+    conexion.query(createTableComentarios, function(e){
         if(e) throw e;
         
         else{
