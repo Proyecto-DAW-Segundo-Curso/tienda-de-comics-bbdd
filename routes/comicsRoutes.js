@@ -36,5 +36,8 @@ router.delete('/comics/:id', comicsController.deleteComic);
 // Define una ruta GET para obtener todos los usuarios.
 router.get('/users', usersController.getAllUsers);
 
+//define una ruta para crear un nuevo usuario
+router.post('/users', usersController.addUser);
+
 // Exporta el enrutador para que pueda ser utilizado en otros archivos (por ejemplo, en el archivo principal de la aplicación).
 module.exports = router;

@@ -5,7 +5,7 @@ const cors = require('cors');
 
 const app = express();
 app.use(cors());
-const PORT = 3000;
+const PORT = 3001;
 
 // Middleware para servir archivos estáticos
 app.use(express.static('public'));
