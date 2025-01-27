@@ -1,5 +1,6 @@
 //importamos la conexion a bbdd
 const pool = require('../config/db.js');
+const bcrypt = require('bcrypt');
 
 
 //petición asíncrona mediante el uso de promises ('query') para listar todos los usuarios de la bbdd
@@ -14,14 +15,32 @@ async function getUserBydId (id){
     return rows[0];
 }
 
-async function addUser (user){
-    const {nombre,email,contrasenia,permiso}=user;
-    const fecha_registro = new Date(); // Fecha actual
-    const [result] = await pool.query(
-        'INSERT INTO usuarios (nombre, email, contrasenia, permiso, fecha_registro) VALUES (?,?,?,?,?)',
-        [nombre, email, contrasenia, permiso, fecha_registro]
-    )
-    return result.insertId;
+async function addUser(req, res) {
+    try {
+        const { nombre, email, contrasenia, permiso } = req.body;
+
+        // Verificar si el email ya está registrado
+        const [existingUser] = await usersModel.getAllUsers();
+        if (existingUser.find(user => user.email === email)) {
+            return res.status(400).json({ message: 'El email ya está registrado' });
+        }
+
+        // Hashear la contraseña antes de guardarla
+        const hashedPassword = await bcrypt.hash(contrasenia, 10);
+
+        // Guardar el nuevo usuario
+        const newUserId = await usersModel.addUser({
+            nombre,
+            email,
+            contrasenia: hashedPassword,
+            permiso: permiso || 'usuario',
+        });
+
+        res.status(201).json({ message: 'Usuario registrado con éxito', id: newUserId });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error al registrar el usuario', error });
+    }
 }
 
 async function updateUser (user,id){
