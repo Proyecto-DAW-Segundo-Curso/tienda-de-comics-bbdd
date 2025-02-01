@@ -15,31 +15,36 @@ async function getUserBydId (id){
     return rows[0];
 }
 
-async function addUser(req, res) {
+async function getUserByEmail(email) {
     try {
-        const { nombre, email, contrasenia, permiso } = req.body;
-
-        // Verificar si el email ya está registrado
-        const [existingUser] = await usersModel.getAllUsers();
-        if (existingUser.find(user => user.email === email)) {
-            return res.status(400).json({ message: 'El email ya está registrado' });
+        const [rows] = await pool.query('SELECT * FROM usuarios WHERE email = ?', [email]);
+        
+        if (!rows || rows.length === 0) {
+            return null; // Si no encuentra usuario, devuelve null
         }
 
-        // Hashear la contraseña antes de guardarla
-        const hashedPassword = await bcrypt.hash(contrasenia, 10);
-
-        // Guardar el nuevo usuario
-        const newUserId = await usersModel.addUser({
-            nombre,
-            email,
-            contrasenia: hashedPassword,
-            permiso: permiso || 'usuario',
-        });
-
-        res.status(201).json({ message: 'Usuario registrado con éxito', id: newUserId });
+        return rows[0]; // Devuelve el primer usuario encontrado
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Error al registrar el usuario', error });
+        console.error("❌ Error en getUserByEmail:", error);
+        throw error; // Lanza el error para que lo capture el controlador
+    }
+}
+
+
+async function addUser(userData) {
+    try {
+        const { nombre, email, contrasenia, permiso } = userData;
+        const query = `INSERT INTO usuarios (nombre, email, contrasenia, permiso) VALUES (?, ?, ?, ?)`;
+        const [result] = await pool.query(query, [nombre, email, contrasenia, permiso]);    
+
+        if (!result.insertId) {
+            throw new Error('Error al insertar usuario en la base de datos');
+        }
+
+        return result.insertId; // Devuelve el ID del nuevo usuario
+    } catch (error) {
+        console.error("❌ Error en addUser:", error);
+        throw error; // Lanza el error para que lo capture el controlador
     }
 }
 
@@ -65,6 +70,7 @@ async function deleteUser (id){
 module.exports ={
     getAllUsers,
     getUserBydId,
+    getUserByEmail,
     addUser,
     updateUser,
     deleteUser,

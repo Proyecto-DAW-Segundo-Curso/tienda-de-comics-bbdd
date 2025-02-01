@@ -1,6 +1,7 @@
 const express = require('express');
 // const bodyParser = require('body-parser');
 const comicsRoutes = require('./routes/comicsRoutes');
+const usersRoutes = require('./routes/usersRoutes');
 const cors = require('cors');
 
 const app = express();
@@ -15,6 +16,7 @@ app.use(express.json());
 
 // Rutas de cómics
 app.use('/api', comicsRoutes);
+app.use('/api', usersRoutes);
 
 // Servidor
 app.listen(PORT, () => {
