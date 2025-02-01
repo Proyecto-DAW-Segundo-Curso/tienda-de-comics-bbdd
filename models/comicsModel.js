@@ -31,6 +31,8 @@ async function getComicById(id) {
   return rows[0];
 }
 
+
+
 // Función asincrónica para insertar un nuevo cómic en la base de datos
 async function addComic(comic) {
   // Extrae los campos del objeto comic recibido como parámetro
