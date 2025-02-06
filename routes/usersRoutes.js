@@ -1,5 +1,6 @@
 const express = require('express');
 const usersController = require('../controllers/usersController');
+const verifyToken = require('../middlewares/authMiddlewares.js');
 
 const router = express.Router();
 
@@ -7,9 +8,14 @@ const router = express.Router();
 router.post('/register', usersController.addUser);
 
 // Ruta para obtener todos los usuarios
-router.get('/users', usersController.getAllUsers);
+router.get('/users', verifyToken, usersController.getAllUsers);
 
 //Ruta para el Login
 router.post('/login', usersController.loginUser);
+
+// Ruta para obtener un usuario por su ID
+router.get('/user/:id', verifyToken, usersController.getUserById);
+
+router.get('/me', verifyToken, usersController.getUserProfile);
 
 module.exports = router;

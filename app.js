@@ -1,8 +1,9 @@
+require('dotenv').config();
 const express = require('express');
-// const bodyParser = require('body-parser');
 const comicsRoutes = require('./routes/comicsRoutes');
 const usersRoutes = require('./routes/usersRoutes');
 const cors = require('cors');
+
 
 const app = express();
 app.use(cors());
