@@ -1,5 +1,6 @@
 const usersModel = require('../models/usersModel.js');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 //esta funcion  guarda en una variable el método definido en el modelo para rescatar todos los usuarios de la bbdd
 //gestiona los errores y transforma los datos en formato json
@@ -25,6 +26,23 @@ async function getAllUsers(req, res) {
         res.status(500).json({message: 'Error al obtener el usuario', error})
     }
   }
+
+  async function getUserProfile(req, res) {
+    try {
+      const userId = req.user.id; // El ID del usuario viene del token
+      const user = await usersModel.getUserBydId(userId); // Obtener el usuario por ID
+  
+      if (!user) {
+        return res.status(404).json({ message: 'Usuario no encontrado' });
+      }
+  
+      res.json(user); // Devolver los datos del usuario
+    } catch (error) {
+      console.error("Error en getUserProfile:", error);
+      res.status(500).json({ message: 'Error al obtener los datos del usuario', error: error.message });
+    }
+  }
+  
 
   async function addUser(req, res) {
     try {
@@ -95,13 +113,26 @@ async function loginUser(req, res) {
           return res.status(401).json({ message: 'Credenciales incorrectas' });
       }
 
+      //generamos un token
+      const token = jwt.sign(
+        {
+          id:user.id, email: user.email, permiso: user.permiso
+        },
+        process.env.JWT_SECRET, //clave secreta guardada en archivo .env
+        {expiresIn: '1h'} //tiempo de expiración del token
+      );
+
       // Devolver información del usuario (sin la contraseña)
       console.log("✅ Inicio de sesión exitoso");
       res.status(200).json({ 
+          message: 'Inicio de sesión exitoso',
+          token,
+          user: {
           id: user.id, 
           nombre: user.nombre, 
           email: user.email, 
           permiso: user.permiso 
+          },
       });
 
   } catch (error) {
@@ -135,6 +166,7 @@ async function loginUser(req, res) {
 module.exports = {
     getAllUsers,
     getUserById,
+    getUserProfile,
     loginUser,
     addUser,
     updateUser,
