@@ -143,25 +143,63 @@ async function loginUser(req, res) {
 
 
 
-  async function updateUser (req,res){
-    try{
-        const updatedRows = await usersModel.updateUser(req.params.id, req.body);
-        if(!updatedRows) return res.status(404).json({message: 'Usuario no encontrado'})
-        res.json({message: 'usuario actualizado'});    
-    }catch(error){
-        res.status(500).json({message: 'Error al actualizar el usuario', error})
-    }
-  }
+async function updateUser(req, res) {
+  try {
+      const userId = req.user.id; // Obtener el ID del usuario autenticado
+      const { nombre, email, contrasenia } = req.body;
 
-  async function deleteUser (req,res){
-    try{
-        const deletedRows = await usersModel.deleteUser(req.params.id);
-        if(!deletedRows) return res.status(404).json({message: 'Usuario no encontrado'});
-        res.json({message: 'Usuario eliminado'})
-    }catch(error){
-        res.status(500).json({message: 'Error al eliminar el usuario', error})
-    }
+      // Verificar si el usuario existe
+      const user = await usersModel.getUserBydId(userId);
+      if (!user) {
+          return res.status(404).json({ message: 'Usuario no encontrado' });
+      }
+
+      let hashedPassword = user.contrasenia; // Mantener la contraseña si no se cambia
+
+      if (contrasenia) {
+          hashedPassword = await bcrypt.hash(contrasenia, 10); // Hashear la nueva contraseña
+      }
+
+      // Actualizar el usuario en la base de datos
+      const updatedRows = await usersModel.updateUser({
+          id: userId,
+          nombre: nombre || user.nombre,
+          email: email || user.email,
+          contrasenia: hashedPassword
+      });
+
+      if (!updatedRows) {
+          return res.status(400).json({ message: 'No se pudo actualizar el usuario' });
+      }
+
+      res.json({ message: 'Usuario actualizado con éxito' });
+  } catch (error) {
+      console.error("Error al actualizar el usuario:", error);
+      res.status(500).json({ message: 'Error al actualizar el usuario', error: error.message });
   }
+}
+
+
+async function deleteUser(req, res) {
+  try {
+      const userId = req.user.id; // Usuario autenticado
+      const idAEliminar = parseInt(req.params.id);
+
+      // Solo el usuario puede eliminar su propia cuenta, excepto si es administrador
+      if (userId !== idAEliminar && req.user.permiso !== 2) {
+          return res.status(403).json({ message: "No tienes permiso para eliminar esta cuenta." });
+      }
+
+      const deletedRows = await usersModel.deleteUser(idAEliminar);
+      if (!deletedRows) return res.status(404).json({ message: "Usuario no encontrado" });
+
+      res.json({ message: "Cuenta eliminada con éxito" });
+  } catch (error) {
+      console.error(" Error al eliminar la cuenta:", error);
+      res.status(500).json({ message: "Error en el servidor", error: error.message });
+  }
+}
+
 
 module.exports = {
     getAllUsers,

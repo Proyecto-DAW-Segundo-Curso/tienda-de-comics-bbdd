@@ -48,23 +48,32 @@ async function addUser(userData) {
     }
 }
 
-async function updateUser (user,id){
-    const {nombre,email,contrasenia,permiso}=user;
-    const [result] = await pool.query(
-        'UPDATE usuarios SET nombre=?, email=?,contrasenia=?, permiso=? WHERE id=?',
-        [nombre, email, contrasenia, permiso,id]
-    );
+async function updateUser(user) {
+    try {
+        const { id, nombre, email, contrasenia } = user;
+        const [result] = await pool.query(
+            'UPDATE usuarios SET nombre=?, email=?, contrasenia=? WHERE id=?',
+            [nombre, email, contrasenia, id]
+        );
 
-    return result.affectedRows;
+        return result.affectedRows;
+    } catch (error) {
+        console.error("Error en updateUser:", error);
+        throw error;
+    }
 }
 
 
-async function deleteUser (id){
-
-    const [result] = await pool.query('DELETE FROM usuarios where id =?',[id]);
-
-    return result.affectedRows;
+async function deleteUser(id) {
+    try {
+        const [result] = await pool.query('DELETE FROM usuarios WHERE id = ?', [id]);
+        return result.affectedRows;
+    } catch (error) {
+        console.error("Error en deleteUser:", error);
+        throw error;
+    }
 }
+
 
 
 module.exports ={
