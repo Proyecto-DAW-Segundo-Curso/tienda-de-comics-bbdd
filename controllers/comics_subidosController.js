@@ -18,13 +18,39 @@ async function getComicSubidoById (req,res){
     }
 }
 
-async function addUploadedComic (req,res){
+async function addUploadedComic(req, res) {
     try {
-        const NewUploadedComic = await comics_subidosModel.addComicSubido(req.body);
-        res.status(201).json({message: 'Comic subido con exito', id:NewUploadedComic});
+        console.log("📌 Datos recibidos en el servidor:", req.body);
+        console.log("📌 Usuario autenticado:", req.user);
 
+        const usuario_id = req.user?.id;
+        const { titulo, imagen, autor, editorial, genero, precio } = req.body;
+
+        if (!usuario_id) {
+            console.error("❌ Error: Usuario no autenticado");
+            return res.status(401).json({ message: "Usuario no autenticado" });
+        }
+
+        if (!titulo || !imagen) {
+            console.error("❌ Error: Faltan campos obligatorios");
+            return res.status(400).json({ message: "Faltan campos obligatorios" });
+        }
+
+        const newComicId = await comics_subidosModel.addComicSubido({
+            usuario_id,
+            titulo,
+            imagen,
+            autor,
+            editorial,
+            genero,
+            precio,
+        });
+
+        console.log("✅ Cómic subido con éxito, ID:", newComicId);
+        res.status(201).json({ message: "Cómic subido con éxito", id: newComicId });
     } catch (error) {
-        res.status(500).json({message: 'Error al subir el comic',error})
+        console.error("🔥 Error al subir el cómic:", error);
+        res.status(500).json({ message: "Error interno del servidor", error: error.message });
     }
 }
 
@@ -48,9 +74,20 @@ async function deleteUploadedComic (req,res){
     }
 }
 
+async function getComicsByUser(req, res) {
+    try {
+        const userId = req.user.id; // ID del usuario autenticado
+        const comics = await comics_subidosModel.getComicsByUserId(userId);
+        res.json(comics);
+    } catch (error) {
+        res.status(500).json({ message: "Error al obtener los cómics del usuario", error });
+    }
+}
+
 module.exports = {
     getAllUploadedComics,
     getComicSubidoById,
+    getComicsByUser,
     addUploadedComic,
     updateUploadedComic,
     deleteUploadedComic
