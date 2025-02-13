@@ -2,12 +2,19 @@ const comicsSubidosUsuarioModel = require('../models/comics_subidos_usuarioModel
 
 async function getAllComicsSubidosUsuario(req, res) {
     try {
-        const comics = await comicsSubidosUsuarioModel.getAllComicsSubidosUsuario();
+        const usuario_id = req.user.id; // Extraer el ID del usuario autenticado
+
+        if (!usuario_id) {
+            return res.status(400).json({ message: "No se pudo determinar el usuario." });
+        }
+
+        const comics = await comicsSubidosUsuarioModel.getComicsByUsuarioId(usuario_id);
         res.json(comics);
     } catch (error) {
-        res.status(500).json({ message: 'Error al obtener los cómics subidos por usuario', error });
+        res.status(500).json({ message: 'Error al obtener los cómics del usuario', error });
     }
 }
+
 
 async function getComicSubidoUsuarioById(req, res) {
     try {

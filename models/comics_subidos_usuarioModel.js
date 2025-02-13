@@ -44,10 +44,16 @@ async function deleteComicSubidoUsuario(id) {
     return result.affectedRows;
 }
 
+async function getComicsByUsuarioId(usuario_id) {
+    const [rows] = await pool.query('SELECT * FROM comics_subidos WHERE usuario_id = ?', [usuario_id]);
+    return rows;
+}
+
 module.exports = {
     getAllComicsSubidosUsuario,
     getComicSubidoUsuarioById,
     addComicSubidoUsuario,
     updateComicSubidoUsuario,
-    deleteComicSubidoUsuario
+    deleteComicSubidoUsuario,
+    getComicsByUsuarioId
 };
