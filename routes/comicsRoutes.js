@@ -4,7 +4,6 @@ const express = require('express');
 // Importa el controlador de cómics, que contiene las funciones que manejan la lógica de negocio
 // asociada a cada ruta (como obtener, añadir, actualizar o eliminar cómics).
 const comicsController = require('../controllers/comicsController');
-const usersController = require('../controllers/usersController');
 
 // Crea un enrutador de Express. Este enrutador nos permite definir rutas específicas para los cómics.
 const router = express.Router();
@@ -31,13 +30,6 @@ router.put('/comics/:id', comicsController.updateComic);
 // Define una ruta DELETE para eliminar un cómic por su ID.
 // Captura el ID de la URL y utiliza la función `deleteComic` del controlador para manejar la solicitud.
 router.delete('/comics/:id', comicsController.deleteComic);
-
-
-// Define una ruta GET para obtener todos los usuarios.
-router.get('/users', usersController.getAllUsers);
-
-//define una ruta para crear un nuevo usuario
-router.post('/register', usersController.addUser);
 
 // Exporta el enrutador para que pueda ser utilizado en otros archivos (por ejemplo, en el archivo principal de la aplicación).
 module.exports = router;
