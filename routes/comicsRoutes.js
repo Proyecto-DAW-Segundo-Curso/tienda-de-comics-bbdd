@@ -5,7 +5,7 @@ const express = require('express');
 // asociada a cada ruta (como obtener, añadir, actualizar o eliminar cómics).
 const comicsController = require('../controllers/comicsController');
 const usersController = require('../controllers/usersController');
-const comics_subidosController = require('../controllers/comics_subidosController'); // Asegurar que se importa
+
 const verifyToken = require('../middlewares/authMiddlewares.js'); // Asegurar que se protege con autenticación
 
 

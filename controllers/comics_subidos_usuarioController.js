@@ -1,4 +1,6 @@
 const comicsSubidosUsuarioModel = require('../models/comics_subidos_usuarioModel.js');
+const intercambioModel = require('../models/intercambioModel.js'); // Importar el modelo de intercambios
+
 
 async function getAllComicsSubidosUsuario(req, res) {
     try {
@@ -79,10 +81,30 @@ async function deleteComicSubidoUsuario(req, res) {
     }
 }
 
+async function ofertarComic(req, res) {
+    try {
+        const usuario_id = req.user.id;
+        const { comic_id, comentario } = req.body;
+
+        if (!usuario_id || !comic_id) {
+            return res.status(400).json({ message: "Datos insuficientes para ofertar el cómic." });
+        }
+
+        // Insertar en la tabla de intercambios
+        await intercambioModel.addComicToIntercambio(comic_id, usuario_id, comentario);
+
+        res.status(201).json({ message: 'Cómic ofertado con éxito' });
+    } catch (error) {
+        console.error("🔥 Error al ofertar cómic:", error);
+        res.status(500).json({ message: 'Error al ofertar el cómic', error: error.message });
+    }
+}
+
 module.exports = {
     getAllComicsSubidosUsuario,
     getComicSubidoUsuarioById,
     addComicSubidoUsuario,
     updateComicSubidoUsuario,
-    deleteComicSubidoUsuario
+    deleteComicSubidoUsuario,
+    ofertarComic
 };

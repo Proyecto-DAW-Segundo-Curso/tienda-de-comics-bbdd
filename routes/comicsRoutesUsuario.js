@@ -9,5 +9,6 @@ router.get('/comics-subidos-usuario/:id', verifyToken,  comicsSubidosUsuarioCont
 router.post('/comics-subidos-usuario', verifyToken, comicsSubidosUsuarioController.addComicSubidoUsuario);
 router.put('/comics-subidos-usuario/:id', verifyToken, comicsSubidosUsuarioController.updateComicSubidoUsuario);
 router.delete('/comics-subidos-usuario/:id', verifyToken, comicsSubidosUsuarioController.deleteComicSubidoUsuario);
+router.post('/comics-subidos-usuario/ofertar', verifyToken, comicsSubidosUsuarioController.ofertarComic);
 
 module.exports = router;
