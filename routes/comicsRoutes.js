@@ -6,6 +6,9 @@ const express = require('express');
 const comicsController = require('../controllers/comicsController');
 const usersController = require('../controllers/usersController');
 
+const verifyToken = require('../middlewares/authMiddlewares.js'); // Asegurar que se protege con autenticación
+
+
 // Crea un enrutador de Express. Este enrutador nos permite definir rutas específicas para los cómics.
 const router = express.Router();
 
@@ -38,6 +41,7 @@ router.get('/users', usersController.getAllUsers);
 
 //define una ruta para crear un nuevo usuario
 router.post('/register', usersController.addUser);
+
 
 // Exporta el enrutador para que pueda ser utilizado en otros archivos (por ejemplo, en el archivo principal de la aplicación).
 module.exports = router;
