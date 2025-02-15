@@ -29,6 +29,22 @@ async function getComicById(req, res) {
   }
 }
 
+async function getComicByGenero(req, res) {
+  try {
+    const gender = req.params.comics.genero;  // Obtiene el género directamente desde la query
+
+    if (!gender) return res.status(403).json({ message: 'No se encuentran los cómis por ese género' });
+    console.log(gender);
+    
+    const comics = await comicsModel.getComicByGenero(gender);
+    console.log(comics);
+
+    res.json(comics);
+  } catch (error) {
+    res.status(500).json({ message: 'Error al obtener los cómics por género' });
+  }
+}
+
 // Función asíncrona para añadir un nuevo cómic.
 async function addComic(req, res) {
   try {
@@ -75,11 +91,12 @@ async function deleteComic(req, res) {
 // Exporta todas las funciones definidas en este archivo como un objeto.
 // Esto permite que otras partes de la aplicación (como las rutas) puedan utilizarlas.
 module.exports = {
-  getAllComics,   // Función para obtener todos los cómics.
-  getComicById,   // Función para obtener un cómic por ID.
-  addComic,       // Función para añadir un nuevo cómic.
-  updateComic,    // Función para actualizar un cómic por ID.
-  deleteComic,    // Función para eliminar un cómic por ID.
+  getAllComics,     // Función para obtener todos los cómics.
+  getComicById,     // Función para obtener un cómic por ID.
+  addComic,         // Función para añadir un nuevo cómic.
+  updateComic,      // Función para actualizar un cómic por ID.
+  deleteComic,      // Función para eliminar un cómic por ID.
+  getComicByGenero  // Función para obtener cómics por género -> Cómic || Manga
 };
 
 /**
