@@ -21,6 +21,11 @@ router.get('/comics', comicsController.getAllComics);
 // La función `getComicById` del controlador maneja esta solicitud.
 router.get('/comics/:id', comicsController.getComicById);
 
+// Define una ruta GET para obtener un cómic específico por su ID.
+// El parámetro dinámico `genero=Manga` captura el género proporcionado en la URL.
+// La función `getComicByComic` del controlador maneja esta solicitud.
+router.get('/comics/genero/:genero', comicsController.getComicByGenero);
+
 // Define una ruta POST para añadir un nuevo cómic.
 // Esta ruta espera que el cliente envíe los datos del nuevo cómic en el cuerpo de la solicitud.
 // La función `addComic` del controlador maneja esta solicitud.

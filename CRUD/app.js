@@ -4,7 +4,7 @@ const conexionBaseDatos = require('./conexionBaseDatos');
 const app = express();
 app.use(express.json()); // Middleware para parsear los JSON recibidos
 
-const PORT = 3000;
+const PORT = 3001;
 
 // **1. Crear un usuario (INSERT)**
 app.post('/usuarios', (req, res) => {
