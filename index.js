@@ -43,7 +43,6 @@ const createTableVentas = 'CREATE TABLE ventas (' +
   'cantidad INT(50) NOT NULL,' +
   'total DECIMAL(10,2) NOT NULL DEFAULT 0.00,' +
   'PRIMARY KEY (id),' +
-  'UNIQUE (id_venta),' +
   'CONSTRAINT fk_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE ON UPDATE CASCADE,' +
   'CONSTRAINT fk_comic FOREIGN KEY (comic_id) REFERENCES comics(id) ON DELETE SET NULL ON UPDATE CASCADE,' +
   'CONSTRAINT fk_merchan FOREIGN KEY (merchan_id) REFERENCES merchan(id) ON DELETE SET NULL ON UPDATE CASCADE)';
