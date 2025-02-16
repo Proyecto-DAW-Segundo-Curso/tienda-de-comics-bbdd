@@ -98,11 +98,22 @@ async function ofertarComic(req, res) {
     }
 }
 
+async function getAllIntercambios(req, res) {
+    try {
+        const intercambios = await intercambioModel.getAllIntercambios();
+        res.json(intercambios);
+    } catch (error) {
+        console.error("❌ Error al obtener las ofertas:", error);
+        res.status(500).json({ message: "Error al obtener las ofertas", error: error.message });
+    }
+}
+
 module.exports = {
     getAllComicsSubidosUsuario,
     getComicSubidoUsuarioById,
     addComicSubidoUsuario,
     updateComicSubidoUsuario,
     deleteComicSubidoUsuario,
+    getAllIntercambios,
     ofertarComic
 };
