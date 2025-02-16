@@ -49,6 +49,7 @@ async function getComicsByUsuarioId(usuario_id) {
     return rows;
 }
 
+
 module.exports = {
     getAllComicsSubidosUsuario,
     getComicSubidoUsuarioById,
