@@ -31,5 +31,8 @@ router.put('/comics/:id', comicsController.updateComic);
 // Captura el ID de la URL y utiliza la función `deleteComic` del controlador para manejar la solicitud.
 router.delete('/comics/:id', comicsController.deleteComic);
 
+// Define una ruta GET para obtener el stock de un cómic.
+router.get('/comic/:id/stock', comicsController.getComicStock);
+
 // Exporta el enrutador para que pueda ser utilizado en otros archivos (por ejemplo, en el archivo principal de la aplicación).
 module.exports = router;
