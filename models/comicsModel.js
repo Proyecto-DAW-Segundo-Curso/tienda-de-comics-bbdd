@@ -72,14 +72,28 @@ async function deleteComic(id) {
   return result.affectedRows;
 }
 
+async function fetchComicStock(id) {
+  try {
+      const [rows] = await pool.query('SELECT stock FROM comics WHERE id = ?', [id]);
+      return rows.length > 0 ? rows[0].stock : null;
+  } catch (error) {
+      console.error('Error al obtener el stock desde la base de datos:', error);
+      throw error;
+  }
+}
+
+
 // Exporta todas las funciones definidas en este módulo para que puedan ser utilizadas en otras partes de la aplicación
 module.exports = {
-  getAllComics,      // Exporta la función para obtener todos los cómics
-  getComicById,      // Exporta la función para obtener un cómic por ID
+
+  getAllComics,  // Exporta la función para obtener todos los cómics
+  getComicById,  // Exporta la función para obtener un cómic por ID
+  addComic,      // Exporta la función para agregar un nuevo cómic
+  updateComic,   // Exporta la función para actualizar un cómic existente
+  deleteComic,   // Exporta la función para eliminar un cómic por ID
+  fetchComicStock // Exporta la función para obtener el stock de un cómic.
   getComicByGenero,   // Exporta la función para obtener cómics por genero
-  addComic,          // Exporta la función para agregar un nuevo cómic
-  updateComic,       // Exporta la función para actualizar un cómic existente
-  deleteComic       // Exporta la función para eliminar un cómic por ID
+ 
 };
 
 /*

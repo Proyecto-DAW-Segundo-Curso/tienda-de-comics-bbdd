@@ -1,63 +1,59 @@
 const pool = require('../config/db.js');
 
-async function getAllVentas (){
-    const [rows]= await pool.query('SELECT * from ventas');
+async function getAllVentas() {
+    const [rows] = await pool.query('SELECT * FROM ventas ORDER BY fecha_venta DESC');
     return rows;
 }
 
-async function getVentasById (id){
-    const[rows] = await pool.query('SELECT * from ventas where id=?',[id]);
+async function getVentasById(id) {
+    const [rows] = await pool.query('SELECT * FROM ventas WHERE id=?', [id]);
+    if (rows.length === 0) return null;
     return rows[0];
 }
 
-//importante, cambiar DATETIME para que se autogenere con:
-//ALTER TABLE ventas
-//MODIFY COLUMN fecha_venta DATETIME DEFAULT CURRENT_TIMESTAMP;
-async function addVenta(venta) {
-    const { usuario_id, comic_id, merchan_id, cantidad } = venta;
-  
+async function addVenta(ventaData) {
+    const connection = await pool.getConnection();
     try {
-      // Inicializar la variable precio a 0, y una variable total para la venta
-      let precio = 0;
-      let total = 0;
-  
-      // Verificar si se compra un cómic
-      if (comic_id) {
-        const [comic] = await pool.query('SELECT precio FROM comics WHERE id = ?', [comic_id]);
-        if (!comic.length) throw new Error('Cómic no encontrado');
-        // Si hay cómic, añadir el precio al total
-        precio = comic[0].precio;
-        total += precio * cantidad; // Sumar el precio del cómic
-      }
-  
-      // Verificar si se compra un merchandising
-      if (merchan_id) {
-        const [merchan] = await pool.query('SELECT precio FROM merchan WHERE id = ?', [merchan_id]);
-        if (!merchan.length) throw new Error('Merchan no encontrado');
-        // Si hay merchandising, añadir el precio al total
-        precio = merchan[0].precio;
-        total += precio * cantidad; // Sumar el precio del merchandising
-      }
-  
-      // Verificar que el total sea mayor que 0 antes de insertar la venta
-      if (total <= 0) {
-        throw new Error('El total de la venta no puede ser cero o negativo');
-      }
+        await connection.beginTransaction();
+        const { id_venta, usuario_id, comic_id, fecha_venta, cantidad, total } = ventaData;
 
-      // Insertar la venta en la base de datos
-      const [result] = await pool.query(
-        'INSERT INTO ventas (usuario_id, comic_id, merchan_id, cantidad, total) VALUES (?, ?, ?, ?, ?)',
-        [usuario_id, comic_id || null, merchan_id || null, cantidad, total]
-      );
-  
-      return result.insertId; // Devuelve el ID de la venta insertada
+        const query = `INSERT INTO ventas (id_venta, usuario_id, comic_id, fecha_venta, cantidad, total) VALUES (?, ?, ?, ?, ?, ?)`;
+        const [result] = await connection.query(query, [id_venta, usuario_id, comic_id, fecha_venta, cantidad, total]);
+
+        if (!result.insertId) throw new Error('Error al insertar la venta');
+
+        await connection.commit();
+        return result.insertId;
     } catch (error) {
-      throw new Error('Error al añadir la venta: ' + error.message);
+        await connection.rollback();
+        console.error("❌ Error en addVenta:", error);
+        throw error;
+    } finally {
+        connection.release();
     }
 }
+
+async function updateStock(comic_id, cantidad, connection = pool) {
+    try {
+        const [stockCheck] = await connection.query('SELECT stock FROM comics WHERE id = ?', [comic_id]);
+        if (stockCheck.length === 0) throw new Error('Cómic no encontrado');
+        if (stockCheck[0].stock < cantidad) throw new Error('Stock insuficiente');
+
+        const query = `UPDATE comics SET stock = stock - ? WHERE id = ?`;
+        const [result] = await connection.query(query, [cantidad, comic_id]);
+
+        if (result.affectedRows === 0) throw new Error('Error al actualizar el stock');
+        return result;
+    } catch (error) {
+        console.error("❌ Error en updateStock:", error);
+        throw error;
+    }
+}
+
 
 module.exports = {
     getAllVentas,
     getVentasById,
-    addVenta
-}
+    addVenta,
+    updateStock,
+};
