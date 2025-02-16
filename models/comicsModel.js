@@ -34,7 +34,7 @@ async function getComicById(id) {
 // Función asincrónica para obtener los cómics por género
 async function getComicByGenero(genero) {
   // Ejecuta una consulta SQL para seleccionar los datos cuyo género concida con el parametro proporcionado
-  const [rows] = await pool.query('SELECT * FROM comics WHERE genero = ?' [genero]);  // Devuelve los registros encontrados
+  const [rows] = await pool.query('SELECT * FROM comics WHERE genero = ?', [genero]);  // Devuelve los registros encontrados
   return rows;
 }
 

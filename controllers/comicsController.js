@@ -31,13 +31,11 @@ async function getComicById(req, res) {
 
 async function getComicByGenero(req, res) {
   try {
-    const gender = req.params.comics.genero;  // Obtiene el género directamente desde la query
+    const gender = req.params.genero;  // Obtiene el género directamente desde la query
 
     if (!gender) return res.status(403).json({ message: 'No se encuentran los cómis por ese género' });
-    console.log(gender);
     
     const comics = await comicsModel.getComicByGenero(gender);
-    console.log(comics);
 
     res.json(comics);
   } catch (error) {
