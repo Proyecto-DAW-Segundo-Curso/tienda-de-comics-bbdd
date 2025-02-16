@@ -17,4 +17,11 @@ function verifyToken(req, res, next) {
   }
 }
 
-module.exports = verifyToken;
+function verifyAdmin(req, res, next) {
+  if (req.user.permiso !== '9') {
+    return res.status(403).json({ message: 'No tienes permiso para realizar esta acción' });
+  }
+  next();
+}
+
+module.exports = verifyToken, verifyAdmin;

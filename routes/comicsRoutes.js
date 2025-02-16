@@ -5,6 +5,9 @@ const express = require('express');
 // asociada a cada ruta (como obtener, añadir, actualizar o eliminar cómics).
 const comicsController = require('../controllers/comicsController');
 
+const verifyToken = require('../middlewares/authMiddlewares.js'); // Asegurar que se protege con autenticación
+
+
 // Crea un enrutador de Express. Este enrutador nos permite definir rutas específicas para los cómics.
 const router = express.Router();
 
@@ -16,6 +19,11 @@ router.get('/comics', comicsController.getAllComics);
 // El parámetro dinámico `:id` captura el ID proporcionado en la URL.
 // La función `getComicById` del controlador maneja esta solicitud.
 router.get('/comics/:id', comicsController.getComicById);
+
+// Define una ruta GET para obtener un cómic específico por su ID.
+// El parámetro dinámico `genero=Manga` captura el género proporcionado en la URL.
+// La función `getComicByComic` del controlador maneja esta solicitud.
+router.get('/comics/genero/:genero', comicsController.getComicByGenero);
 
 // Define una ruta POST para añadir un nuevo cómic.
 // Esta ruta espera que el cliente envíe los datos del nuevo cómic en el cuerpo de la solicitud.
@@ -33,6 +41,7 @@ router.delete('/comics/:id', comicsController.deleteComic);
 
 // Define una ruta GET para obtener el stock de un cómic.
 router.get('/comic/:id/stock', comicsController.getComicStock);
+
 
 // Exporta el enrutador para que pueda ser utilizado en otros archivos (por ejemplo, en el archivo principal de la aplicación).
 module.exports = router;

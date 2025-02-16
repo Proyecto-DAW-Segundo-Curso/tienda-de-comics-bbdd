@@ -41,4 +41,21 @@ async function getComicsByUserId(usuarioId) {
         }
     }
 
-module.exports = ComicModel;
+    async function addComicToIntercambio(comic_id, usuario_id, comentario) {
+        try {
+            const query = `
+                INSERT INTO intercambios (comic_id, usuario_id, comentario, estado_intercambio, fecha_comentario) 
+                VALUES (?, ?, ?, 'disponible', NOW())
+            `;
+            await pool.query(query, [comic_id, usuario_id, comentario]);
+        } catch (error) {
+            console.error("🔥 Error al insertar en intercambios:", error.message);
+            throw error;
+        }
+    }
+
+module.exports = {
+    getAllIntercambios,
+    getComicsByUserId,
+    addComicToIntercambio
+};
