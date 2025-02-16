@@ -91,7 +91,7 @@ module.exports = {
   addComic,      // Exporta la función para agregar un nuevo cómic
   updateComic,   // Exporta la función para actualizar un cómic existente
   deleteComic,   // Exporta la función para eliminar un cómic por ID
-  fetchComicStock // Exporta la función para obtener el stock de un cómic.
+  fetchComicStock, // Exporta la función para obtener el stock de un cómic.
   getComicByGenero,   // Exporta la función para obtener cómics por genero
  
 };
