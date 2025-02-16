@@ -25,7 +25,7 @@ async function getUserByEmail(email) {
 
         return rows[0]; // Devuelve el primer usuario encontrado
     } catch (error) {
-        console.error("❌ Error en getUserByEmail:", error);
+        console.error(" Error en getUserByEmail:", error);
         throw error; // Lanza el error para que lo capture el controlador
     }
 }
@@ -43,25 +43,54 @@ async function addUser(userData) {
 
         return result.insertId; // Devuelve el ID del nuevo usuario
     } catch (error) {
-        console.error("❌ Error en addUser:", error);
+        console.error(" Error en addUser:", error);
         throw error; // Lanza el error para que lo capture el controlador
     }
 }
 
-async function updateUser(user) {
+async function updateUser(user) {1
     try {
-        const { id, nombre, email, contrasenia } = user;
-        const [result] = await pool.query(
-            'UPDATE usuarios SET nombre=?, email=?, contrasenia=? WHERE id=?',
-            [nombre, email, contrasenia, id]
-        );
+        const { id, nombre, email, contrasenia, permiso } = user;
+        console.log(" Datos recibidos en updateUser:", user);
 
+        let query = 'UPDATE usuarios SET';
+        let values = [];
+        
+        if (nombre) {
+            query += ' nombre=?,';
+            values.push(nombre);
+        }
+        if (email) {
+            query += ' email=?,';
+            values.push(email);
+        }
+        if (contrasenia) {
+            query += ' contrasenia=?,';
+            values.push(contrasenia);
+        }
+        if (permiso !== undefined) {  // Solo lo añadimos si existe en la petición
+            query += ' permiso=?,';
+            values.push(permiso);
+        }
+
+        // Eliminamos la última coma y agregamos la condición WHERE
+        query = query.slice(0, -1) + ' WHERE id=?';
+        values.push(id);
+
+        console.log(" Query generada:", query);
+        console.log(" Valores:", values);
+
+        const [result] = await pool.query(query, values);
+
+        console.log(" Resultado de la actualización:", result);
         return result.affectedRows;
     } catch (error) {
-        console.error("Error en updateUser:", error);
+        console.error(" Error en updateUser:", error);
         throw error;
     }
 }
+
+
 
 
 async function deleteUser(id) {
