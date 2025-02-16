@@ -112,7 +112,7 @@ module.exports = {
   addComic,       // Función para añadir un nuevo cómic.
   updateComic,    // Función para actualizar un cómic por ID.
   deleteComic,    // Función para eliminar un cómic por ID.
-  getComicStock   // Función para obtener el stock de un cómic.
+  getComicStock,   // Función para obtener el stock de un cómic.
   getComicByGenero  // Función para obtener cómics por género -> Cómic || Manga
 
 };
