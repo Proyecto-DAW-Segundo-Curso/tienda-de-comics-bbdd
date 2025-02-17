@@ -102,9 +102,8 @@ async function ofertarComic(req, res) {
             const intercambioId = await intercambioModel.ofertarComic(comic_id, comentario, estado_intercambio);
             res.status(201).json({ message: "Cómic ofertado exitosamente", intercambio_id: intercambioId });
         } catch (error) {
-            return res.status(400).json({ message: error.message }); // Devolver el error al frontend
+            return res.status(400).json({ message: error.message });
         }
-
     } catch (error) {
         console.error("❌ Error en el controlador al ofertar el cómic:", error);
         res.status(500).json({ message: "Error al ofertar el cómic", error: error.message });
@@ -121,31 +120,92 @@ async function getAllIntercambios(req, res) {
     }
 }
 
-async function ofertarComic(req, res) {
+async function obtenerOfertasDeUsuario(req, res) {
     try {
-        const { comic_id, comentario, estado_intercambio } = req.body;
+        const usuario_id = req.user.id; // Obtener el ID del usuario autenticado
 
-        if (!comic_id || !estado_intercambio) {
-            return res.status(400).json({ message: "Faltan datos necesarios." });
+        if (!usuario_id) {
+            return res.status(400).json({ message: "Usuario no autenticado." });
         }
 
-        try {
-            const intercambioId = await intercambioModel.ofertarComic(comic_id, comentario, estado_intercambio);
-            res.status(201).json({ message: "Cómic ofertado exitosamente", intercambio_id: intercambioId });
-        } catch (error) {
-            return res.status(400).json({ message: error.message });
-        }
+        const ofertas = await intercambioModel.obtenerOfertasDeUsuario(usuario_id);
+
+        res.json(ofertas);
     } catch (error) {
-        console.error("❌ Error en el controlador al ofertar el cómic:", error);
-        res.status(500).json({ message: "Error al ofertar el cómic", error: error.message });
+        console.error("❌ Error en el controlador al obtener ofertas del usuario:", error);
+        res.status(500).json({ message: "Error al obtener las ofertas", error: error.message });
     }
 }
+
+async function editarOferta(req, res) {
+    try {
+        const { intercambio_id, comentario, estado_intercambio } = req.body;
+
+        if (!intercambio_id || !comentario || !estado_intercambio) {
+            return res.status(400).json({ message: "Faltan datos necesarios para editar la oferta." });
+        }
+
+        const filasModificadas = await intercambioModel.editarOferta(intercambio_id, comentario, estado_intercambio);
+
+        if (filasModificadas === 0) {
+            return res.status(404).json({ message: "No se encontró la oferta o no hubo cambios." });
+        }
+
+        res.json({ message: "Oferta editada correctamente." });
+    } catch (error) {
+        console.error("❌ Error en el controlador al editar oferta:", error);
+        res.status(500).json({ message: "Error al editar la oferta", error: error.message });
+    }
+}
+
+async function eliminarOferta(req, res) {
+    try {
+        const { id } = req.params;
+
+        if (!id) {
+            return res.status(400).json({ message: "Falta el ID de la oferta a eliminar." });
+        }
+
+        const filasEliminadas = await intercambioModel.eliminarOferta(id);
+
+        if (filasEliminadas === 0) {
+            return res.status(404).json({ message: "La oferta no existe o ya fue eliminada." });
+        }
+
+        res.json({ message: "Oferta eliminada correctamente." });
+    } catch (error) {
+        console.error("❌ Error en el controlador al eliminar la oferta:", error);
+        res.status(500).json({ message: "Error al eliminar la oferta", error: error.message });
+    }
+}
+
+async function obtenerOfertaPorId(req, res) {
+    try {
+        const { id } = req.params;
+        const oferta = await intercambioModel.obtenerOfertaPorId(id);
+
+        if (!oferta) {
+            return res.status(404).json({ message: "Oferta no encontrada." });
+        }
+
+        res.json(oferta);
+    } catch (error) {
+        console.error("❌ Error en el controlador al obtener oferta:", error);
+        res.status(500).json({ message: "Error al obtener la oferta", error: error.message });
+    }
+}
+
 module.exports = {
     getAllComicsSubidosUsuario,
     getComicSubidoUsuarioById,
     addComicSubidoUsuario,
     updateComicSubidoUsuario,
     deleteComicSubidoUsuario,
+    getAllIntercambios,
+    editarOferta,
+    obtenerOfertasDeUsuario,
+    eliminarOferta,
     ofertarComic,
-    getAllIntercambios
+    obtenerOfertaPorId
+
 };

@@ -48,7 +48,6 @@ async function ofertarComic(comic_id, comentario, estado_intercambio) {
         throw error;
     }
 }
-
 // Obtener los cómics subidos por un usuario, incluyendo información de intercambio.
 async function getComicsByUserId(usuarioId) {
     const query = `
@@ -82,8 +81,70 @@ async function getComicsByUserId(usuarioId) {
     }
 }
 
+async function obtenerOfertasDeUsuario(usuario_id) {
+    try {
+        const [rows] = await pool.query(`
+            SELECT 
+                i.id AS intercambio_id, 
+                i.comic_id, 
+                i.comentario, 
+                i.fecha_comentario, 
+                i.estado_intercambio,
+                c.titulo, 
+                c.imagen, 
+                c.precio
+            FROM intercambios i
+            JOIN comics_subidos c ON i.comic_id = c.id
+            WHERE c.usuario_id = ?`, [usuario_id]
+        );
+
+        return rows;
+    } catch (error) {
+        console.error("🔥 Error en la consulta SQL al obtener ofertas del usuario:", error.message);
+        throw error;
+    }
+}
+
+async function editarOferta(intercambio_id, comentario, estado_intercambio) {
+    try {
+        const [result] = await pool.query(
+            'UPDATE intercambios SET comentario = ?, estado_intercambio = ? WHERE id = ?',
+            [comentario, estado_intercambio, intercambio_id]
+        );
+
+        return result.affectedRows; // Retorna cuántas filas fueron modificadas
+    } catch (error) {
+        console.error("🔥 Error en la consulta SQL al editar oferta:", error.message);
+        throw error;
+    }
+}
+
+async function eliminarOferta(intercambio_id) {
+    try {
+        const [result] = await pool.query('DELETE FROM intercambios WHERE id = ?', [intercambio_id]);
+        return result.affectedRows; // Devuelve cuántas filas se eliminaron
+    } catch (error) {
+        console.error("🔥 Error en la consulta SQL al eliminar oferta:", error.message);
+        throw error;
+    }
+}
+
+async function obtenerOfertaPorId(intercambio_id) {
+    try {
+        const [rows] = await pool.query('SELECT * FROM intercambios WHERE id = ?', [intercambio_id]);
+        return rows.length ? rows[0] : null;
+    } catch (error) {
+        console.error("🔥 Error en la consulta SQL al obtener oferta:", error.message);
+        throw error;
+    }
+}
+
 module.exports = {
     getAllIntercambios,
     ofertarComic,
-    getComicsByUserId
+    getComicsByUserId,
+    editarOferta,
+    obtenerOfertasDeUsuario,
+    obtenerOfertaPorId,
+    eliminarOferta
 };
