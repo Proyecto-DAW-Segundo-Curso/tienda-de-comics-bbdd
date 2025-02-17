@@ -16,7 +16,7 @@ async function getAllUsers(req, res) {
 
   async function getUserById (req,res){
     try{
-      console.log("📌 Recibiendo solicitud de registro:", req.body);
+      console.log(" Recibiendo solicitud de registro:", req.body);
         const  user = await usersModel.getUserBydId(req.params.id);
 
         if(!user) return res.status(404).json({ message: 'Usuario no encontrado'});
@@ -47,7 +47,7 @@ async function getAllUsers(req, res) {
   async function addUser(req, res) {
     try {
 
-      console.log("📌 Recibiendo solicitud de registro:", req.body);
+      console.log(" Recibiendo solicitud de registro:", req.body);
         const { nombre, email, contrasenia } = req.body;
 
         // Verificar si se enviaron todos los datos necesarios
@@ -57,27 +57,27 @@ async function getAllUsers(req, res) {
 
         // Verificar si el email ya está registrado
         const existingUsers = await usersModel.getAllUsers();
-        console.log("📌 Usuarios existentes en la BBDD:", existingUsers);
+        console.log(" Usuarios existentes en la BBDD:", existingUsers);
         if (existingUsers.some(user => user.email === email)) {
             return res.status(400).json({ message: 'El email ya está registrado' });
         }
 
         // Hashear la contraseña antes de guardarla
-        console.log("🔑 Hasheando contraseña...");
+        console.log(" Hasheando contraseña...");
         const hashedPassword = await bcrypt.hash(contrasenia, 10);
 
         // Guardar el nuevo usuario
-        console.log("📌 Guardando nuevo usuario en la BBDD...");  
+        console.log(" Guardando nuevo usuario en la BBDD...");  
         const newUserId = await usersModel.addUser({
             nombre,
             email,
             contrasenia: hashedPassword,
             permiso: 1,
         });
-        console.log("✅ Usuario registrado con éxito, ID:", newUserId);
+        console.log("Usuario registrado con éxito, ID:", newUserId);
         res.status(201).json({ message: 'Usuario registrado con éxito', id: newUserId });
     } catch (error) {
-      console.error("🔥 ERROR DETECTADO:", error); // Mostrar error en la terminal
+      console.error(" ERROR DETECTADO:", error); // Mostrar error en la terminal
       res.status(500).json({ message: 'Error interno del servidor', error: error.stack }); // Enviar stack del error a Postman
     }
 }
@@ -93,14 +93,14 @@ async function loginUser(req, res) {
       // Buscar usuario en la base de datos por email
       const user = await usersModel.getUserByEmail(email);
       
-      console.log("📌 Usuario encontrado en la BBDD:", user); // Verificar si el usuario existe
+      console.log(" Usuario encontrado en la BBDD:", user); // Verificar si el usuario existe
 
       if (!user) {
-          console.log("⚠️ No se encontró usuario con ese email.");
+          console.log(" No se encontró usuario con ese email.");
           return res.status(401).json({ message: 'Credenciales incorrectas' });
       }
 
-      console.log("🔑 Comparando contraseñas...");
+      console.log(" Comparando contraseñas...");
       console.log("Contraseña ingresada:", contrasenia);
       console.log("Contraseña en la BBDD:", user.contrasenia);
 
@@ -109,7 +109,7 @@ async function loginUser(req, res) {
       console.log("¿Las contraseñas coinciden?", match);
 
       if (!match) {
-          console.log("⚠️ Las contraseñas no coinciden.");
+          console.log(" Las contraseñas no coinciden.");
           return res.status(401).json({ message: 'Credenciales incorrectas' });
       }
 
@@ -136,7 +136,7 @@ async function loginUser(req, res) {
       });
 
   } catch (error) {
-      console.error("🔥 Error en loginUser:", error);
+      console.error(" Error en loginUser:", error);
       res.status(500).json({ message: 'Error interno del servidor', error: error.message });
   }
 }
@@ -145,60 +145,90 @@ async function loginUser(req, res) {
 
 async function updateUser(req, res) {
   try {
-      const userId = req.user.id; // Obtener el ID del usuario autenticado
-      const { nombre, email, contrasenia } = req.body;
+    console.log(" Petición recibida en updateUser:", req.params, req.body);
 
-      // Verificar si el usuario existe
-      const user = await usersModel.getUserBydId(userId);
-      if (!user) {
-          return res.status(404).json({ message: 'Usuario no encontrado' });
-      }
+    const { id } = req.params;
+    let { nombre, email, contrasenia, permiso } = req.body;
+    const userIdAuth = req.user.id;
+    const userRole = req.user.permiso;
 
-      let hashedPassword = user.contrasenia; // Mantener la contraseña si no se cambia
+    const userId = id ? Number(id) : userIdAuth;
+    if (isNaN(userId) || userId <= 0) {
+      return res.status(400).json({ message: "ID de usuario inválido" });
+    }
 
-      if (contrasenia) {
-          hashedPassword = await bcrypt.hash(contrasenia, 10); // Hashear la nueva contraseña
-      }
+    const user = await usersModel.getUserBydId(userId);
+    if (!user) {
+      return res.status(404).json({ message: "Usuario no encontrado" });
+    }
 
-      // Actualizar el usuario en la base de datos
-      const updatedRows = await usersModel.updateUser({
-          id: userId,
-          nombre: nombre || user.nombre,
-          email: email || user.email,
-          contrasenia: hashedPassword
-      });
+    console.log("🔍 Permiso recibido antes de validación:", permiso);
 
-      if (!updatedRows) {
-          return res.status(400).json({ message: 'No se pudo actualizar el usuario' });
-      }
+    //  Si el usuario autenticado no es admin, no puede cambiar permisos
+    const nuevoPermiso = userRole === 9 ? Number(permiso) : user.permiso;
 
-      res.json({ message: 'Usuario actualizado con éxito' });
+    console.log(" Permiso que se guardará en la base de datos:", nuevoPermiso);
+
+    let hashedPassword = user.contrasenia;
+    if (contrasenia) {
+      hashedPassword = await bcrypt.hash(contrasenia, 10);
+    }
+
+    const updatedRows = await usersModel.updateUser({
+      id: userId,
+      nombre: nombre || user.nombre,
+      email: email || user.email,
+      contrasenia: hashedPassword,
+      permiso: nuevoPermiso, //  Aquí se aplica el permiso corregido
+    });
+
+    if (!updatedRows) {
+      return res.status(400).json({ message: "No se pudo actualizar el usuario" });
+    }
+
+    res.json({ message: "Usuario actualizado con éxito" });
   } catch (error) {
-      console.error("Error al actualizar el usuario:", error);
-      res.status(500).json({ message: 'Error al actualizar el usuario', error: error.message });
+    console.error(" Error en updateUser:", error);
+    res.status(500).json({ message: "Error al actualizar el usuario", error: error.message });
   }
 }
+
 
 
 async function deleteUser(req, res) {
   try {
-      const userId = req.user.id; // Usuario autenticado
-      const idAEliminar = parseInt(req.params.id);
+    const userIdAuth = req.user.id; // Usuario autenticado
+    const userRole = req.user.permiso; // Permiso del usuario autenticado
+    const idAEliminar = parseInt(req.params.id, 10); // ID del usuario a eliminar
 
-      // Solo el usuario puede eliminar su propia cuenta, excepto si es administrador
-      if (userId !== idAEliminar && req.user.permiso !== 2) {
-          return res.status(403).json({ message: "No tienes permiso para eliminar esta cuenta." });
-      }
+    console.log(`🔹 Intentando eliminar usuario ID: ${idAEliminar} - Autenticado ID: ${userIdAuth} - Permiso: ${userRole}`);
 
-      const deletedRows = await usersModel.deleteUser(idAEliminar);
-      if (!deletedRows) return res.status(404).json({ message: "Usuario no encontrado" });
+    // 🔹 **Reglas de eliminación**
+    //  Un usuario normal solo puede eliminarse a sí mismo
+    //  Un administrador (permiso === 9) puede eliminar a cualquiera
+    if (userIdAuth !== idAEliminar && userRole !== 9) {
+      return res.status(403).json({ message: "No tienes permiso para eliminar este usuario." });
+    }
 
-      res.json({ message: "Cuenta eliminada con éxito" });
+    // Verificar si el usuario que se intenta eliminar existe
+    const usuarioExistente = await usersModel.getUserBydId(idAEliminar);
+    if (!usuarioExistente) {
+      return res.status(404).json({ message: "Usuario no encontrado." });
+    }
+
+    // Eliminar el usuario de la base de datos
+    const deletedRows = await usersModel.deleteUser(idAEliminar);
+    if (!deletedRows) {
+      return res.status(500).json({ message: "No se pudo eliminar el usuario." });
+    }
+
+    res.json({ message: "Usuario eliminado con éxito." });
   } catch (error) {
-      console.error(" Error al eliminar la cuenta:", error);
-      res.status(500).json({ message: "Error en el servidor", error: error.message });
+    console.error(" Error al eliminar usuario:", error);
+    res.status(500).json({ message: "Error en el servidor", error: error.message });
   }
 }
+
 
 
 module.exports = {

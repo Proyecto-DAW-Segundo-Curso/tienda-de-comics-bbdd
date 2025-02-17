@@ -1,5 +1,5 @@
 const comicsSubidosUsuarioModel = require('../models/comics_subidos_usuarioModel.js');
-const intercambioModel = require('../models/intercambioModel.js');
+const intercambioModel = require('../models/intercambioModel.js'); // Importar el modelo de intercambios
 
 async function getAllComicsSubidosUsuario(req, res) {
     try {
@@ -207,4 +207,5 @@ module.exports = {
     eliminarOferta,
     ofertarComic,
     obtenerOfertaPorId
+
 };

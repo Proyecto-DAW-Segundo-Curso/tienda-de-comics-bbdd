@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const comicsRoutes = require('./routes/comicsRoutes');
 const usersRoutes = require('./routes/usersRoutes');
+const ventasRoutes = require('./routes/ventasRoutes');
 const comicsRoutesUsuario = require('./routes/comicsRoutesUsuario');
 const cors = require('cors');
 
@@ -19,7 +20,9 @@ app.use(express.json());
 // Rutas de cómics
 app.use('/api', comicsRoutes);
 app.use('/api', usersRoutes);
+app.use('/api', ventasRoutes);
 app.use('/api', comicsRoutesUsuario);
+
 
 // Servidor
 app.listen(PORT, () => {

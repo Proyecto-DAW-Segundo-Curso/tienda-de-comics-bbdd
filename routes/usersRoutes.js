@@ -1,6 +1,7 @@
 const express = require('express');
 const usersController = require('../controllers/usersController');
 const verifyToken = require('../middlewares/authMiddlewares.js');
+const verifyAdmin = require('../middlewares/authMiddlewares.js');
 
 const router = express.Router();
 
@@ -20,6 +21,11 @@ router.get('/me', verifyToken, usersController.getUserProfile);
 
 router.put('/update', verifyToken, usersController.updateUser);
 
+router.put('/user/:id', verifyToken, usersController.updateUser);
+
+
 router.delete('/user/:id', verifyToken, usersController.deleteUser);
+
+router.get('/users', verifyToken, verifyAdmin, usersController.getAllUsers);
 
 module.exports = router;
