@@ -40,8 +40,18 @@ async function updateComicSubidoUsuario(id, comic) {
 }
 
 async function deleteComicSubidoUsuario(id) {
-    const [result] = await pool.query('DELETE FROM comics_subidos WHERE id=?', [id]);
-    return result.affectedRows;
+    try {
+        // Primero, eliminar cualquier referencia en la tabla `intercambios`
+        await pool.query('DELETE FROM intercambios WHERE comic_id = ?', [id]);
+
+        // Ahora, eliminar el cómic de `comics_subidos`
+        const [result] = await pool.query('DELETE FROM comics_subidos WHERE id = ?', [id]);
+
+        return result.affectedRows; // Devuelve el número de filas eliminadas
+    } catch (error) {
+        console.error("🔥 Error en la consulta SQL al eliminar cómic:", error.message);
+        throw error;
+    }
 }
 
 async function getComicsByUsuarioId(usuario_id) {

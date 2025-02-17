@@ -72,14 +72,24 @@ async function updateComicSubidoUsuario(req, res) {
 
 async function deleteComicSubidoUsuario(req, res) {
     try {
-        const deletedRows = await comicsSubidosUsuarioModel.deleteComicSubidoUsuario(req.params.id);
-        if (!deletedRows) return res.status(404).json({ message: 'Cómic no encontrado' });
-        res.json({ message: 'Cómic eliminado' });
+        const { id } = req.params; // Obtener el ID del cómic desde la URL
+
+        if (!id) {
+            return res.status(400).json({ message: "Falta el ID del cómic a eliminar." });
+        }
+
+        const deletedRows = await comicsSubidosUsuarioModel.deleteComicSubidoUsuario(id);
+        
+        if (deletedRows === 0) {
+            return res.status(404).json({ message: "Cómic no encontrado o ya eliminado." });
+        }
+
+        res.json({ message: "Cómic eliminado correctamente." });
     } catch (error) {
-        res.status(500).json({ message: 'Error al eliminar el cómic subido por usuario', error });
+        console.error("🔥 Error al eliminar el cómic:", error);
+        res.status(500).json({ message: "Error al eliminar el cómic", error: error.message });
     }
 }
-
 async function ofertarComic(req, res) {
     try {
         const { comic_id, comentario, estado_intercambio } = req.body;
