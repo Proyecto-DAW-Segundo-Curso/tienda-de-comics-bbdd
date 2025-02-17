@@ -123,28 +123,29 @@ async function getAllIntercambios(req, res) {
 
 async function ofertarComic(req, res) {
     try {
-        const usuario_id = req.user.id;
-        const { comic_id, comentario } = req.body;
+        const { comic_id, comentario, estado_intercambio } = req.body;
 
-        if (!usuario_id || !comic_id) {
-            return res.status(400).json({ message: "Datos insuficientes para ofertar el cómic." });
+        if (!comic_id || !estado_intercambio) {
+            return res.status(400).json({ message: "Faltan datos necesarios." });
         }
 
-        // Insertar en la tabla de intercambios
-        await intercambioModel.addComicToIntercambio(comic_id, usuario_id, comentario);
-
-        res.status(201).json({ message: 'Cómic ofertado con éxito' });
+        try {
+            const intercambioId = await intercambioModel.ofertarComic(comic_id, comentario, estado_intercambio);
+            res.status(201).json({ message: "Cómic ofertado exitosamente", intercambio_id: intercambioId });
+        } catch (error) {
+            return res.status(400).json({ message: error.message });
+        }
     } catch (error) {
-        console.error("🔥 Error al ofertar cómic:", error);
-        res.status(500).json({ message: 'Error al ofertar el cómic', error: error.message });
+        console.error("❌ Error en el controlador al ofertar el cómic:", error);
+        res.status(500).json({ message: "Error al ofertar el cómic", error: error.message });
     }
 }
-
 module.exports = {
     getAllComicsSubidosUsuario,
     getComicSubidoUsuarioById,
     addComicSubidoUsuario,
     updateComicSubidoUsuario,
     deleteComicSubidoUsuario,
-    ofertarComic
+    ofertarComic,
+    getAllIntercambios
 };
