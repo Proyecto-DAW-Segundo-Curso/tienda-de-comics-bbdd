@@ -82,16 +82,19 @@ async function deleteComicSubidoUsuario(req, res) {
 
 async function ofertarComic(req, res) {
     try {
-        const usuario_id = req.user.id; // ID del usuario autenticado desde el token
-        const { comic_id, comentario } = req.body;
+        const { comic_id, comentario, estado_intercambio } = req.body;
 
-        if (!usuario_id || !comic_id) {
+        if (!comic_id || !estado_intercambio) {
             return res.status(400).json({ message: "Faltan datos necesarios." });
         }
 
-        const intercambioId = await intercambioModel.ofertarComic(comic_id, comentario);
+        try {
+            const intercambioId = await intercambioModel.ofertarComic(comic_id, comentario, estado_intercambio);
+            res.status(201).json({ message: "Cómic ofertado exitosamente", intercambio_id: intercambioId });
+        } catch (error) {
+            return res.status(400).json({ message: error.message }); // Devolver el error al frontend
+        }
 
-        res.status(201).json({ message: "Cómic ofertado exitosamente", intercambio_id: intercambioId });
     } catch (error) {
         console.error("❌ Error en el controlador al ofertar el cómic:", error);
         res.status(500).json({ message: "Error al ofertar el cómic", error: error.message });

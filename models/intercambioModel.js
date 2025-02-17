@@ -22,10 +22,20 @@ async function getAllIntercambios() {
     }
 }
 // Función para ofertar un cómic
-async function ofertarComic(comic_id, comentario) {
+async function ofertarComic(comic_id, comentario, estado_intercambio) {
     try {
+        // Verificar si el cómic ya tiene una oferta en la tabla `intercambios`
+        const [existingOffer] = await pool.query(
+            'SELECT * FROM intercambios WHERE comic_id = ?',
+            [comic_id]
+        );
+
+        if (existingOffer.length > 0) {
+            throw new Error("Ya has ofertado este cómic. No puedes hacer más de una oferta.");
+        }
+
+        // Si no existe una oferta previa, insertar la nueva oferta
         const fecha_comentario = new Date().toISOString().slice(0, 19).replace("T", " ");
-        const estado_intercambio = "Disponible";
 
         const [result] = await pool.query(
             'INSERT INTO intercambios (comic_id, comentario, fecha_comentario, estado_intercambio) VALUES (?, ?, ?, ?)',
@@ -35,7 +45,7 @@ async function ofertarComic(comic_id, comentario) {
         return result.insertId; // Retorna el ID del nuevo intercambio
     } catch (error) {
         console.error("🔥 Error en la consulta SQL al ofertar cómic:", error.message);
-        throw error; // Se propaga el error para que el controlador lo maneje
+        throw error;
     }
 }
 
