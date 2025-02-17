@@ -86,4 +86,5 @@ module.exports = {
     getAllIntercambios,
     ofertarComic,
     getComicsByUserId
+
 };

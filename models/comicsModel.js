@@ -2,7 +2,7 @@
 const pool = require('../config/db.js');
 
 // Función asincrónica para obtener todos los cómics
-/**
+/*
  * La sintaxis [rows] es desestructuración de arreglos. Aquí, solo se extrae el primer elemento 
  * del arreglo (los registros), ignorando el resto.
  * ¿Qué hace exactamente esta línea?
@@ -31,7 +31,12 @@ async function getComicById(id) {
   return rows[0];
 }
 
-
+// Función asincrónica para obtener los cómics por género
+async function getComicByGenero(genero) {
+  // Ejecuta una consulta SQL para seleccionar los datos cuyo género concida con el parametro proporcionado
+  const [rows] = await pool.query('SELECT * FROM comics WHERE genero = ?', [genero]);  // Devuelve los registros encontrados
+  return rows;
+}
 
 // Función asincrónica para insertar un nuevo cómic en la base de datos
 async function addComic(comic) {
@@ -67,16 +72,31 @@ async function deleteComic(id) {
   return result.affectedRows;
 }
 
+async function fetchComicStock(id) {
+  try {
+      const [rows] = await pool.query('SELECT stock FROM comics WHERE id = ?', [id]);
+      return rows.length > 0 ? rows[0].stock : null;
+  } catch (error) {
+      console.error('Error al obtener el stock desde la base de datos:', error);
+      throw error;
+  }
+}
+
+
 // Exporta todas las funciones definidas en este módulo para que puedan ser utilizadas en otras partes de la aplicación
 module.exports = {
+
   getAllComics,  // Exporta la función para obtener todos los cómics
   getComicById,  // Exporta la función para obtener un cómic por ID
   addComic,      // Exporta la función para agregar un nuevo cómic
   updateComic,   // Exporta la función para actualizar un cómic existente
   deleteComic,   // Exporta la función para eliminar un cómic por ID
+  fetchComicStock, // Exporta la función para obtener el stock de un cómic.
+  getComicByGenero,   // Exporta la función para obtener cómics por genero
+ 
 };
 
-/**
+/*
  * Consideraciones:
  * Estas funciones usan promesas con async/await para manejar operaciones asíncronas.
  * La variable pool representa la conexión a la base de datos, configurada en un archivo externo (db.js).
