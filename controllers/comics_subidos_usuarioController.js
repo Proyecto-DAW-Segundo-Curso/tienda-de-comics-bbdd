@@ -1,7 +1,6 @@
 const comicsSubidosUsuarioModel = require('../models/comics_subidos_usuarioModel.js');
 const intercambioModel = require('../models/intercambioModel.js'); // Importar el modelo de intercambios
 
-
 async function getAllComicsSubidosUsuario(req, res) {
     try {
         const usuario_id = req.user.id; // Extraer el ID del usuario autenticado
@@ -73,11 +72,52 @@ async function updateComicSubidoUsuario(req, res) {
 
 async function deleteComicSubidoUsuario(req, res) {
     try {
-        const deletedRows = await comicsSubidosUsuarioModel.deleteComicSubidoUsuario(req.params.id);
-        if (!deletedRows) return res.status(404).json({ message: 'Cómic no encontrado' });
-        res.json({ message: 'Cómic eliminado' });
+        const { id } = req.params; // Obtener el ID del cómic desde la URL
+
+        if (!id) {
+            return res.status(400).json({ message: "Falta el ID del cómic a eliminar." });
+        }
+
+        const deletedRows = await comicsSubidosUsuarioModel.deleteComicSubidoUsuario(id);
+        
+        if (deletedRows === 0) {
+            return res.status(404).json({ message: "Cómic no encontrado o ya eliminado." });
+        }
+
+        res.json({ message: "Cómic eliminado correctamente." });
     } catch (error) {
-        res.status(500).json({ message: 'Error al eliminar el cómic subido por usuario', error });
+        console.error("🔥 Error al eliminar el cómic:", error);
+        res.status(500).json({ message: "Error al eliminar el cómic", error: error.message });
+    }
+}
+async function ofertarComic(req, res) {
+    try {
+        const { comic_id, comentario, estado_intercambio } = req.body;
+
+        if (!comic_id || !estado_intercambio) {
+            return res.status(400).json({ message: "Faltan datos necesarios." });
+        }
+
+        try {
+            const intercambioId = await intercambioModel.ofertarComic(comic_id, comentario, estado_intercambio);
+            res.status(201).json({ message: "Cómic ofertado exitosamente", intercambio_id: intercambioId });
+        } catch (error) {
+            return res.status(400).json({ message: error.message }); // Devolver el error al frontend
+        }
+
+    } catch (error) {
+        console.error("❌ Error en el controlador al ofertar el cómic:", error);
+        res.status(500).json({ message: "Error al ofertar el cómic", error: error.message });
+    }
+}
+
+async function getAllIntercambios(req, res) {
+    try {
+        const intercambios = await intercambioModel.getAllIntercambios();
+        res.json(intercambios);
+    } catch (error) {
+        console.error("❌ Error al obtener las ofertas:", error);
+        res.status(500).json({ message: "Error al obtener las ofertas", error: error.message });
     }
 }
 
