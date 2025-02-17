@@ -102,9 +102,8 @@ async function ofertarComic(req, res) {
             const intercambioId = await intercambioModel.ofertarComic(comic_id, comentario, estado_intercambio);
             res.status(201).json({ message: "Cómic ofertado exitosamente", intercambio_id: intercambioId });
         } catch (error) {
-            return res.status(400).json({ message: error.message }); // Devolver el error al frontend
+            return res.status(400).json({ message: error.message });
         }
-
     } catch (error) {
         console.error("❌ Error en el controlador al ofertar el cómic:", error);
         res.status(500).json({ message: "Error al ofertar el cómic", error: error.message });
