@@ -1,7 +1,7 @@
 const pool = require('../config/db.js');
 
 async function getAllVentas() {
-    const [rows] = await pool.query('SELECT * FROM ventas ORDER BY fecha_venta DESC');
+    const [rows] = await pool.query('SELECT * FROM ventas');
     return rows;
 }
 
@@ -9,6 +9,15 @@ async function getVentasById(id) {
     const [rows] = await pool.query('SELECT * FROM ventas WHERE id=?', [id]);
     if (rows.length === 0) return null;
     return rows[0];
+}
+
+async function getAllVentasWithUsuarioComic() {
+    const [rows] = await pool.query('SELECT comics.titulo AS comic, comics.precio AS precio, usuarios.nombre AS usuario, ventas.fecha_venta AS fecha, cantidad FROM ventas JOIN usuarios ON ventas.usuario_id = usuarios.id JOIN comics ON ventas.comic_id = comics.id;');
+    return rows;
+}
+async function getVentasByUsuario(usuario_id) {  
+    const [rows] = await pool.query('SELECT comics.titulo AS comic, comics.precio AS precio, usuarios.nombre AS usuario,  ventas.fecha_venta AS fecha, cantidad FROM ventas JOIN usuarios ON ventas.usuario_id = usuarios.id JOIN comics ON ventas.comic_id = comics.id', [usuario_id]);
+    return rows;
 }
 
 async function addVenta(ventaData) {
@@ -56,4 +65,6 @@ module.exports = {
     getVentasById,
     addVenta,
     updateStock,
+    getAllVentasWithUsuarioComic,
+    getVentasByUsuario,
 };

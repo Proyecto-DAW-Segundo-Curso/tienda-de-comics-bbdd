@@ -13,7 +13,15 @@ const authMiddleware = require('../middlewares/authMiddlewares');
 
 // Define una ruta GET para obtener todos los ventas.
 // Cuando el cliente envía una solicitud GET a '/', se ejecuta la función `getAllventas` del controlador.
-router.get('/ventas', ventasController.getAllVentas);
+router.get('/ventasConUsuarioComic', ventasController.getAllVentas);
+
+// Define una ruta GET para obtener todos los ventas.
+// Cuando el cliente envía una solicitud GET a '/', se ejecuta la función `getAllventas` del controlador.
+router.get('/ventas', ventasController.getAllVentasWithUsuarioComic);
+
+// Define una ruta GET para obtener todos los ventas de un usuario específico.
+// El parámetro dinámico `:usuario` captura el ID del usuario proporcionado en la URL.
+router.get('/ventas/usuario/:usuario_id', ventasController.getVentasByUsuario);
 
 // Define una ruta POST para procesar una venta.
 // Esta ruta espera que el cliente envíe los datos de la venta en el cuerpo de la solicitud.
@@ -23,7 +31,12 @@ router.post('/ventas', authMiddleware, ventasController.realizarVenta);
 // Define una ruta GET para obtener un venta específico por su ID.
 // El parámetro dinámico `:id` captura el ID proporcionado en la URL.
 // La función `getComicById` del controlador maneja esta solicitud.
-router.get('/venta/:id', ventasController.getVentasById);
+router.get('/venta/id/:id', ventasController.getVentasById);
+
+// Define una ruta GET para obtener un venta específico por su ID.
+// El parámetro dinámico `:id` captura el ID proporcionado en la URL.
+// La función `getComicById` del controlador maneja esta solicitud.
+// router.get('/venta/usuario/:usuario', ventasController.getVentasById);
 
 // Exporta el enrutador para que pueda ser utilizado en otros archivos (por ejemplo, en el archivo principal de la aplicación).
 module.exports = router;
