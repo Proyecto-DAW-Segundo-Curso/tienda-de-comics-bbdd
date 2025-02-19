@@ -22,6 +22,30 @@ async function getVentasById(req, res) {
   }
 }
 
+async function getVentasByUsuario(req, res) {
+  try {
+    const venta = await ventaModel.getVentasByUsuario(req.params.id)
+
+    if (!venta) return res.status(404).json({ message: 'venta no encontrada' })
+
+    res.json(venta)
+  } catch (error) {
+    res.status(500).json({ message: 'error al obtener venta', error })
+  }
+}
+
+async function getAllVentasWithUsuarioComic(req, res) {
+  try {
+    const venta = await ventaModel.getAllVentasWithUsuarioComic(req.params.id)
+
+    if (!venta) return res.status(404).json({ message: 'venta no encontrada' })
+
+    res.json(venta)
+  } catch (error) {
+    res.status(500).json({ message: 'error al obtener venta', error })
+  }
+}
+
 async function realizarVenta(req, res) {
   try {
     const ventas = req.body;  // <-- Aquí es donde se accede a los items
@@ -60,6 +84,8 @@ module.exports = {
   getAllVentas,
   getVentasById,
   realizarVenta,
+  getAllVentasWithUsuarioComic,
+  getVentasByUsuario,
 };
 
 // Instrucciones para probar la API de ventas con Postman
