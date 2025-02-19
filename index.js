@@ -1,14 +1,5 @@
 const mysql = require('mysql2');
 
-const { format } = require('date-fns');
-const { es } = require('date-fns/locale');
-
-const fecha = new Date();
-const formato = format(fecha, "DD/MM/YYYY HH:mm:ss", { locale: es });
-
-console.log(formato); // Salida: "19/02/2025 14:35:12"
-
-
 const Connection = mysql.createPool({
   host: 'localhost',
   user: 'root',
