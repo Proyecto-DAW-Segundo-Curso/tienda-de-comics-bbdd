@@ -38,14 +38,12 @@ const createTableVentas = 'CREATE TABLE ventas (' +
   'id_venta BIGINT(20) NOT NULL,' +
   'usuario_id INT(15) NOT NULL,' +
   'comic_id INT(15) DEFAULT NULL,' +
-  'merchan_id INT(15) DEFAULT NULL,' +
   'fecha_venta DATETIME,' +
   'cantidad INT(50) NOT NULL,' +
   'total DECIMAL(10,2) NOT NULL DEFAULT 0.00,' +
   'PRIMARY KEY (id),' +
   'CONSTRAINT fk_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE ON UPDATE CASCADE,' +
-  'CONSTRAINT fk_comic FOREIGN KEY (comic_id) REFERENCES comics(id) ON DELETE SET NULL ON UPDATE CASCADE,' +
-  'CONSTRAINT fk_merchan FOREIGN KEY (merchan_id) REFERENCES merchan(id) ON DELETE SET NULL ON UPDATE CASCADE)';
+  'CONSTRAINT fk_comic FOREIGN KEY (comic_id) REFERENCES comics(id) ON DELETE SET NULL ON UPDATE CASCADE)';
 
 const createTableResenias = 'CREATE TABLE resenias (id int(15) NOT NULL AUTO_INCREMENT,' +
   'usuario_id int(15) NOT NULL,' +
