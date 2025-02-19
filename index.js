@@ -1,5 +1,14 @@
 const mysql = require('mysql2');
 
+const { format } = require('date-fns');
+const { es } = require('date-fns/locale');
+
+const fecha = new Date();
+const formato = format(fecha, "DD/MM/YYYY HH:mm:ss", { locale: es });
+
+console.log(formato); // Salida: "19/02/2025 14:35:12"
+
+
 const Connection = mysql.createPool({
   host: 'localhost',
   user: 'root',
@@ -25,8 +34,6 @@ const createTableComics = 'CREATE TABLE comics (id int(15) NOT NULL AUTO_INCREME
   'imagen varchar(150) DEFAULT NULL,' +
   'PRIMARY KEY (id))';
 
-
-//'YYY-MM-DD hh:mm:ss'
 const createTableVentas = 'CREATE TABLE ventas (' +
   'id INT(15) NOT NULL AUTO_INCREMENT,' +
   'id_venta BIGINT(20) NOT NULL,' +
@@ -58,7 +65,7 @@ const createTableComicsSubidos = 'CREATE TABLE comics_subidos (id int(15) NOT NU
   'genero varchar (100) DEFAULT NULL,' +
   'precio float (10) DEFAULT NULL,' +
   'PRIMARY KEY (id))'
-'CONSTRAINT fk_comics_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id))';
+  'CONSTRAINT fk_comics_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id))';
 
 const createTableIntercambios = 'CREATE TABLE intercambios (id int(15) NOT NULL AUTO_INCREMENT,' +
   'comic_id int(15) NOT NULL,' +
@@ -66,7 +73,7 @@ const createTableIntercambios = 'CREATE TABLE intercambios (id int(15) NOT NULL 
   'fecha_comentario DATETIME,' +
   'estado_intercambio varchar(10) NOT NULL,' +
   'PRIMARY KEY (id))'
-'CONSTRAINT fk_comics_subidos_usuario FOREIGN KEY (comic_id) REFERENCES comics_subidos(id))';
+  'CONSTRAINT fk_comics_subidos_usuario FOREIGN KEY (comic_id) REFERENCES comics_subidos(id))';
 
 const createTableComentarios = 'CREATE TABLE comentarios (id int(15) NOT NULL AUTO_INCREMENT,' +
   'intercambio_id int(15) NOT NULL,' +

@@ -12,11 +12,11 @@ async function getVentasById(id) {
 }
 
 async function getAllVentasWithUsuarioComic() {
-    const [rows] = await pool.query('SELECT comics.titulo AS comic, comics.precio AS precio, usuarios.nombre AS usuario, cantidad, ventas.fecha_venta AS fecha FROM ventas JOIN usuarios ON ventas.usuario_id = usuarios.id JOIN comics ON ventas.comic_id = comics.id');
+    const [rows] = await pool.query('SELECT comics.titulo AS comic, comics.precio AS precio, usuarios.nombre AS usuario, ventas.fecha_venta AS fecha, cantidad FROM ventas JOIN usuarios ON ventas.usuario_id = usuarios.id JOIN comics ON ventas.comic_id = comics.id;');
     return rows;
 }
 async function getVentasByUsuario(usuario_id) {  
-    const [rows] = await pool.query('SELECT comics.titulo AS comic, comics.precio AS precio, usuarios.nombre AS usuario, usuario_id, cantidad, ventas.fecha_venta AS fecha FROM ventas JOIN usuarios ON ventas.usuario_id = usuarios.id JOIN comics ON ventas.comic_id = comics.id WHERE usuario_id=?', [usuario_id]);
+    const [rows] = await pool.query('SELECT comics.titulo AS comic, comics.precio AS precio, usuarios.nombre AS usuario,  ventas.fecha_venta AS fecha, cantidad FROM ventas JOIN usuarios ON ventas.usuario_id = usuarios.id JOIN comics ON ventas.comic_id = comics.id', [usuario_id]);
     return rows;
 }
 
