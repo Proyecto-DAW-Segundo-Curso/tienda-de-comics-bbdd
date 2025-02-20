@@ -85,6 +85,27 @@ const createTableComentarios = 'CREATE TABLE comentarios (id int(15) NOT NULL AU
   'CONSTRAINT fk_usuario_intercambio FOREIGN KEY (usuario_id) REFERENCES usuarios(id),' +
   'CONSTRAINT fk_comentario_intercambio FOREIGN KEY (intercambio_id) REFERENCES intercambios(id))';
 
+  const createTableChats='CREATE TABLE chats (id INT AUTO_INCREMENT PRIMARY KEY),'+
+    'comprador_id INT NOT NULL,'+
+    'vendedor_id INT NOT NULL,'+
+    'comic_id INT NOT NULL,'+
+    'creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP,'+
+    'estado ENUM("pendiente", "aceptado", "rechazado") DEFAULT "pendiente",'+
+    'comprador_acepto BOOLEAN DEFAULT FALSE,'+
+    'vendedor_acepto BOOLEAN DEFAULT FALSE,'+
+    'FOREIGN KEY (comprador_id) REFERENCES usuarios(id) ON DELETE CASCADE,'+
+    'FOREIGN KEY (vendedor_id) REFERENCES usuarios(id) ON DELETE CASCADE,'+
+    'FOREIGN KEY (comic_id) REFERENCES comics_subidos(id) ON DELETE CASCADE';
+
+const createTableMensajes='CREATE TABLE mensajes ( id INT AUTO_INCREMENT PRIMARY KEY),' +
+    'chat_id INT NOT NULL,'+
+    'usuario_id INT NOT NULL,'+
+    'mensaje TEXT NOT NULL,'+
+    'enviado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP,'+
+    'visto TINYINT(1) DEFAULT 0,'+
+    'FOREIGN KEY (chat_id) REFERENCES chats(id) ON DELETE CASCADE,'+
+    'FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE';
+
 Connection.getConnection(function (error, conexion) {
   conexion.query(createTableVentas, function (e) {
     if (e) throw e;

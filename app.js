@@ -4,6 +4,7 @@ const comicsRoutes = require('./routes/comicsRoutes');
 const usersRoutes = require('./routes/usersRoutes');
 const ventasRoutes = require('./routes/ventasRoutes');
 const comicsRoutesUsuario = require('./routes/comicsRoutesUsuario');
+const chatRoutes = require('./routes/chatRoutes');
 const cors = require('cors');
 
 
@@ -22,6 +23,7 @@ app.use('/api', comicsRoutes);
 app.use('/api', usersRoutes);
 app.use('/api', ventasRoutes);
 app.use('/api', comicsRoutesUsuario);
+app.use('/api', chatRoutes);
 
 
 // Servidor
