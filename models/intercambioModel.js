@@ -11,13 +11,13 @@ async function getAllIntercambios() {
                 i.fecha_comentario,
                 i.estado_intercambio,
                 c.usuario_id AS vendedor_id, 
-                u.nombre AS vendedor_nombre, // 🔹 Agregamos el nombre del vendedor
+                u.nombre AS vendedor_nombre,
                 c.titulo,
                 c.imagen,
                 c.precio
             FROM intercambios i
             JOIN comics_subidos c ON i.comic_id = c.id
-            JOIN usuarios u ON c.usuario_id = u.id // 🔹 Unimos la tabla de usuarios
+            JOIN usuarios u ON c.usuario_id = u.id
         `);
         return rows;
     } catch (error) {
