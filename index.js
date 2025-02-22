@@ -55,16 +55,19 @@ const createTableResenias = 'CREATE TABLE resenias (id int(15) NOT NULL AUTO_INC
   'CONSTRAINT fk_resenias_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id),' +
   'CONSTRAINT fk_resenias_comic FOREIGN KEY (comic_id) REFERENCES comics(id))';
 
-const createTableComicsSubidos = 'CREATE TABLE comics_subidos (id int(15) NOT NULL AUTO_INCREMENT,' +
-  'usuario_id int(15) NOT NULL,' +
-  'titulo varchar(150)DEFAULT NULL,' +
-  'imagen varchar(150) DEFAULT NULL,' +
-  'autor varchar (100) DEFAULT NULL,' +
-  'editorial varchar(100) DEFAULT NULL,' +
-  'genero varchar (100) DEFAULT NULL,' +
-  'precio float (10) DEFAULT NULL,' +
-  'PRIMARY KEY (id))'
-'CONSTRAINT fk_comics_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id))';
+  const createTableComicsSubidos = `CREATE TABLE comics_subidos (
+    id INT(15) NOT NULL AUTO_INCREMENT,
+    usuario_id INT(15) NOT NULL,
+    titulo VARCHAR(150) DEFAULT NULL,
+    imagen VARCHAR(150) DEFAULT NULL,
+    autor VARCHAR(100) DEFAULT NULL,
+    editorial VARCHAR(100) DEFAULT NULL,
+    genero VARCHAR(100) DEFAULT NULL,
+    precio FLOAT(10) DEFAULT NULL,
+    PRIMARY KEY (id),
+    CONSTRAINT fk_comics_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
+  )`;
+  
 
 const createTableIntercambios = 'CREATE TABLE intercambios (id int(15) NOT NULL AUTO_INCREMENT,' +
   'comic_id int(15) NOT NULL,' +
@@ -72,7 +75,7 @@ const createTableIntercambios = 'CREATE TABLE intercambios (id int(15) NOT NULL 
   'fecha_comentario DATETIME,' +
   'estado_intercambio varchar(10) NOT NULL,' +
   'PRIMARY KEY (id))'
-'CONSTRAINT fk_comics_subidos_usuario FOREIGN KEY (comic_id) REFERENCES comics_subidos(id))';
+'CONSTRAINT fk_comics_subidos_usuario FOREIGN KEY (comic_id) REFERENCES comics_subidos(id) ON DELETE CASCADE)';
 
 const createTableComentarios = 'CREATE TABLE comentarios (id int(15) NOT NULL AUTO_INCREMENT,' +
   'intercambio_id int(15) NOT NULL,' +
