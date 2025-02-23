@@ -19,10 +19,7 @@ router.get('/user/:id', verifyToken, usersController.getUserById);
 
 router.get('/me', verifyToken, usersController.getUserProfile);
 
-router.put('/update', verifyToken, usersController.updateUser);
-
 router.put('/user/:id', verifyToken, usersController.updateUser);
-
 
 router.delete('/user/:id', verifyToken, usersController.deleteUser);
 
