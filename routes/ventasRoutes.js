@@ -13,11 +13,11 @@ const authMiddleware = require('../middlewares/authMiddlewares');
 
 // Define una ruta GET para obtener todos los ventas.
 // Cuando el cliente envía una solicitud GET a '/', se ejecuta la función `getAllventas` del controlador.
-router.get('/ventasConUsuarioComic', ventasController.getAllVentas);
+router.get('/ventasConUsuarioComic', ventasController.getAllVentasWithUsuarioComic);
 
 // Define una ruta GET para obtener todos los ventas.
 // Cuando el cliente envía una solicitud GET a '/', se ejecuta la función `getAllventas` del controlador.
-router.get('/ventas', ventasController.getAllVentasWithUsuarioComic);
+router.get('/ventas', ventasController.getAllVentas);
 
 // Define una ruta GET para obtener todos los ventas de un usuario específico.
 // El parámetro dinámico `:usuario` captura el ID del usuario proporcionado en la URL.
@@ -31,7 +31,7 @@ router.post('/ventas', authMiddleware, ventasController.realizarVenta);
 // Define una ruta GET para obtener un venta específico por su ID.
 // El parámetro dinámico `:id` captura el ID proporcionado en la URL.
 // La función `getComicById` del controlador maneja esta solicitud.
-router.get('/venta/id/:id', ventasController.getVentasById);
+router.get('/venta/:id', ventasController.getVentasById);
 
 // Define una ruta GET para obtener un venta específico por su ID.
 // El parámetro dinámico `:id` captura el ID proporcionado en la URL.
