@@ -1,19 +1,23 @@
 const pool = require('../config/db.js');
 
+// Función para obtener todos los intercambios
 async function getAllIntercambios() {
     try {
         const [rows] = await pool.query(`
             SELECT 
-                i.id AS intercambio_id, 
-                i.comic_id, 
-                i.comentario, 
-                i.fecha_comentario, 
+                i.id AS intercambio_id,
+                i.comic_id,
+                i.comentario,
+                i.fecha_comentario,
                 i.estado_intercambio,
-                c.titulo, 
-                c.imagen, 
+                c.usuario_id AS vendedor_id, 
+                u.nombre AS vendedor_nombre,
+                c.titulo,
+                c.imagen,
                 c.precio
             FROM intercambios i
             JOIN comics_subidos c ON i.comic_id = c.id
+            JOIN usuarios u ON c.usuario_id = u.id
         `);
         return rows;
     } catch (error) {
@@ -21,6 +25,7 @@ async function getAllIntercambios() {
         throw error;
     }
 }
+
 // Función para ofertar un cómic
 async function ofertarComic(comic_id, comentario, estado_intercambio) {
     try {
@@ -48,6 +53,7 @@ async function ofertarComic(comic_id, comentario, estado_intercambio) {
         throw error;
     }
 }
+
 // Obtener los cómics subidos por un usuario, incluyendo información de intercambio.
 async function getComicsByUserId(usuarioId) {
     const query = `
@@ -81,6 +87,7 @@ async function getComicsByUserId(usuarioId) {
     }
 }
 
+// Función para obtener las ofertas de un usuario
 async function obtenerOfertasDeUsuario(usuario_id) {
     try {
         const [rows] = await pool.query(`
@@ -105,6 +112,7 @@ async function obtenerOfertasDeUsuario(usuario_id) {
     }
 }
 
+// Función para editar una oferta
 async function editarOferta(intercambio_id, comentario, estado_intercambio) {
     try {
         const [result] = await pool.query(
@@ -119,6 +127,7 @@ async function editarOferta(intercambio_id, comentario, estado_intercambio) {
     }
 }
 
+// Función para eliminar una oferta
 async function eliminarOferta(intercambio_id) {
     try {
         const [result] = await pool.query('DELETE FROM intercambios WHERE id = ?', [intercambio_id]);
@@ -129,6 +138,7 @@ async function eliminarOferta(intercambio_id) {
     }
 }
 
+// Función para obtener una oferta por su ID
 async function obtenerOfertaPorId(intercambio_id) {
     try {
         const [rows] = await pool.query('SELECT * FROM intercambios WHERE id = ?', [intercambio_id]);

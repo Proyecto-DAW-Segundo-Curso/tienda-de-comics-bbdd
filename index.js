@@ -11,6 +11,7 @@ const createTableUsuario = 'CREATE TABLE usuarios (id int(15) NOT NULL AUTO_INCR
   'nombre varchar (50) DEFAULT NULL,' +
   'email varchar (50) DEFAULT NULL,' +
   'contrasenia varchar (300) DEFAULT NULL,' +
+  'fecha_registro varchar(20) NOT NULL,' +
   'permiso int (3) DEFAULT NULL,' +
   'PRIMARY KEY (id))';
 
@@ -24,15 +25,6 @@ const createTableComics = 'CREATE TABLE comics (id int(15) NOT NULL AUTO_INCREME
   'imagen varchar(150) DEFAULT NULL,' +
   'PRIMARY KEY (id))';
 
-const createTableMerchan = 'CREATE TABLE merchan (id int(15) NOT NULL AUTO_INCREMENT,' +
-  'nombre varchar(150)DEFAULT NULL,' +
-  'categoria varchar (100) DEFAULT NULL,' +
-  'fabricante varchar(100) DEFAULT NULL,' +
-  'precio DECIMAL(10, 2) DEFAULT NULL,' +
-  'stock INT DEFAULT NULL,' +
-  'PRIMARY KEY (id))';
-
-//'YYY-MM-DD hh:mm:ss'
 const createTableVentas = 'CREATE TABLE ventas (' +
   'id INT(15) NOT NULL AUTO_INCREMENT,' +
   'id_venta BIGINT(20) NOT NULL,' +
@@ -45,6 +37,9 @@ const createTableVentas = 'CREATE TABLE ventas (' +
   'CONSTRAINT fk_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE ON UPDATE CASCADE,' +
   'CONSTRAINT fk_comic FOREIGN KEY (comic_id) REFERENCES comics(id) ON DELETE SET NULL ON UPDATE CASCADE)';
 
+  
+
+
 const createTableResenias = 'CREATE TABLE resenias (id int(15) NOT NULL AUTO_INCREMENT,' +
   'usuario_id int(15) NOT NULL,' +
   'comic_id int (15),' +
@@ -54,6 +49,7 @@ const createTableResenias = 'CREATE TABLE resenias (id int(15) NOT NULL AUTO_INC
   'PRIMARY KEY (id),' +
   'CONSTRAINT fk_resenias_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id),' +
   'CONSTRAINT fk_resenias_comic FOREIGN KEY (comic_id) REFERENCES comics(id))';
+
 
   const createTableComicsSubidos = `CREATE TABLE comics_subidos (
     id INT(15) NOT NULL AUTO_INCREMENT,
@@ -68,14 +64,14 @@ const createTableResenias = 'CREATE TABLE resenias (id int(15) NOT NULL AUTO_INC
     CONSTRAINT fk_comics_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
   )`;
   
-
 const createTableIntercambios = 'CREATE TABLE intercambios (id int(15) NOT NULL AUTO_INCREMENT,' +
   'comic_id int(15) NOT NULL,' +
   'comentario varchar(1500),' +
   'fecha_comentario DATETIME,' +
   'estado_intercambio varchar(10) NOT NULL,' +
   'PRIMARY KEY (id))'
-'CONSTRAINT fk_comics_subidos_usuario FOREIGN KEY (comic_id) REFERENCES comics_subidos(id) ON DELETE CASCADE)';
+  'CONSTRAINT fk_comics_subidos_usuario FOREIGN KEY (comic_id) REFERENCES comics_subidos(id) ON DELETE CASCADE)';
+
 
 const createTableComentarios = 'CREATE TABLE comentarios (id int(15) NOT NULL AUTO_INCREMENT,' +
   'intercambio_id int(15) NOT NULL,' +
@@ -85,6 +81,27 @@ const createTableComentarios = 'CREATE TABLE comentarios (id int(15) NOT NULL AU
   'PRIMARY KEY (id),' +
   'CONSTRAINT fk_usuario_intercambio FOREIGN KEY (usuario_id) REFERENCES usuarios(id),' +
   'CONSTRAINT fk_comentario_intercambio FOREIGN KEY (intercambio_id) REFERENCES intercambios(id))';
+
+  const createTableChats='CREATE TABLE chats (id INT AUTO_INCREMENT PRIMARY KEY),'+
+    'comprador_id INT NOT NULL,'+
+    'vendedor_id INT NOT NULL,'+
+    'comic_id INT NOT NULL,'+
+    'creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP,'+
+    'estado ENUM("pendiente", "aceptado", "rechazado") DEFAULT "pendiente",'+
+    'comprador_acepto BOOLEAN DEFAULT FALSE,'+
+    'vendedor_acepto BOOLEAN DEFAULT FALSE,'+
+    'FOREIGN KEY (comprador_id) REFERENCES usuarios(id) ON DELETE CASCADE,'+
+    'FOREIGN KEY (vendedor_id) REFERENCES usuarios(id) ON DELETE CASCADE,'+
+    'FOREIGN KEY (comic_id) REFERENCES comics_subidos(id) ON DELETE CASCADE';
+
+const createTableMensajes='CREATE TABLE mensajes ( id INT AUTO_INCREMENT PRIMARY KEY),' +
+    'chat_id INT NOT NULL,'+
+    'usuario_id INT NOT NULL,'+
+    'mensaje TEXT NOT NULL,'+
+    'enviado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP,'+
+    'visto TINYINT(1) DEFAULT 0,'+
+    'FOREIGN KEY (chat_id) REFERENCES chats(id) ON DELETE CASCADE,'+
+    'FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE';
 
 Connection.getConnection(function (error, conexion) {
   conexion.query(createTableVentas, function (e) {
