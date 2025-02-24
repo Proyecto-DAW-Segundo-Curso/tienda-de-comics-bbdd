@@ -68,7 +68,7 @@ const createTableIntercambios = 'CREATE TABLE intercambios (id int(15) NOT NULL 
   'comic_id int(15) NOT NULL,' +
   'comentario varchar(1500),' +
   'fecha_comentario DATETIME,' +
-  'estado_intercambio varchar(10) NOT NULL,' +
+  'estado_intercambio varchar(50) NOT NULL,' +
   'PRIMARY KEY (id))'
   'CONSTRAINT fk_comics_subidos_usuario FOREIGN KEY (comic_id) REFERENCES comics_subidos(id) ON DELETE CASCADE)';
 
