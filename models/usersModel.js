@@ -34,7 +34,7 @@ async function getUserByEmail(email) {
 async function addUser(userData) {
     try {
         const { nombre, email, contrasenia, permiso } = userData;
-        const query = `INSERT INTO usuarios (nombre, email, contrasenia, permiso) VALUES (?, ?, ?, ?)`;
+        const query = `INSERT INTO usuarios (nombre, email, contrasenia, permiso, fecha_rgistro) VALUES (?, ?, ?, ?, NOW())`;
         const [result] = await pool.query(query, [nombre, email, contrasenia, permiso]);    
 
         if (!result.insertId) {
