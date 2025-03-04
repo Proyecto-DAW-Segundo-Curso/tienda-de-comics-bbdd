@@ -15,6 +15,7 @@ async function getAllVentasWithUsuarioComic() {
   const [rows] = await pool.query('SELECT comics.titulo AS comic, comics.precio AS precio, usuarios.nombre AS usuario, ventas.fecha_venta AS fecha, cantidad FROM ventas JOIN usuarios ON ventas.usuario_id = usuarios.id JOIN comics ON ventas.comic_id = comics.id;');
   return rows;
 }
+
 async function getVentasByUsuario(usuario_id) {
   const [rows] = await pool.query('SELECT comics.titulo AS comic, comics.precio AS precio, usuarios.nombre AS usuario,  ventas.fecha_venta AS fecha, cantidad FROM ventas JOIN usuarios ON ventas.usuario_id = usuarios.id JOIN comics ON ventas.comic_id = comics.id', [usuario_id]);
   return rows;
@@ -59,6 +60,34 @@ async function updateStock(comic_id, cantidad, connection = pool) {
   }
 }
 
+async function ventasReport(fechaInicio, fechaFin) {
+  let query = `
+    SELECT 
+      v.id_venta,
+      u.nombre AS usuario,
+      c.id AS comic_id,
+      c.titulo AS comic,
+      v.cantidad,
+      c.precio,
+      SUM(v.total) AS total_venta  -- Aseguramos la suma total de la venta
+    FROM ventas v
+    JOIN usuarios u ON v.usuario_id = u.id
+    LEFT JOIN comics c ON v.comic_id = c.id
+    WHERE 1=1
+  `;
+
+  const params = [];
+
+  if (fechaInicio && fechaFin) {
+    query += ` AND v.fecha_venta BETWEEN ? AND ?`;
+    params.push(fechaInicio, fechaFin);
+  }
+
+  query += ` GROUP BY v.id_venta, u.nombre, c.id, c.titulo, v.cantidad, c.precio`; 
+
+  const [rows] = await pool.query(query, params);
+  return rows;
+}
 
 module.exports = {
   getAllVentas,
@@ -67,4 +96,5 @@ module.exports = {
   updateStock,
   getAllVentasWithUsuarioComic,
   getVentasByUsuario,
+  ventasReport,
 };

@@ -38,5 +38,7 @@ router.get('/venta/:id', ventasController.getVentasById);
 // La función `getComicById` del controlador maneja esta solicitud.
 // router.get('/venta/usuario/:usuario', ventasController.getVentasById);
 
+router.get('/ventas/reporte', ventasController.getVentasReport);
+
 // Exporta el enrutador para que pueda ser utilizado en otros archivos (por ejemplo, en el archivo principal de la aplicación).
 module.exports = router;
