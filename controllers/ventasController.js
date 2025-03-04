@@ -80,12 +80,55 @@ async function realizarVenta(req, res) {
   }
 }
 
+async function getVentasReport(req, res) {
+  try {
+    const { fechaInicio, fechaFin } = req.query;
+    const results = await ventaModel.ventasReport(fechaInicio, fechaFin);
+
+    console.log('Resultados:', results);
+
+    const ventasAgrupadas = results.reduce((acc, venta) => {
+      if (!acc[venta.id_venta]) {
+        acc[venta.id_venta] = {
+          id_venta: venta.id_venta,
+          usuario: venta.usuario,
+          comics: [],
+          total: 0,
+        };
+      }
+      acc[venta.id_venta].comics.push({
+        id: venta.comic_id,
+        titulo: venta.comic,
+        cantidad: venta.cantidad,
+        precio: venta.precio,
+      });
+
+      // Recalcular correctamente el total sumando (cantidad * precio)
+      acc[venta.id_venta].total += venta.cantidad * venta.precio;
+
+      return acc;
+    }, {});
+
+    const ventas = Object.values(ventasAgrupadas);
+    const totalGeneral = ventas.reduce((acc, venta) => acc + venta.total, 0);
+
+    res.json({ ventas, totalGeneral });
+    console.log('Ventas:', ventas);
+    console.log('Total general:', totalGeneral);
+
+  } catch (error) {
+    console.error('Error en el controlador de ventas:', error);
+    res.status(500).json({ error: 'Error al obtener las ventas' });
+  }
+}
+
 module.exports = {
   getAllVentas,
   getVentasById,
   realizarVenta,
   getAllVentasWithUsuarioComic,
   getVentasByUsuario,
+  getVentasReport,
 };
 
 // Instrucciones para probar la API de ventas con Postman
